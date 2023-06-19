@@ -13,6 +13,7 @@ const grey1 = '#f5f5f7' // 浅一些的灰色
 const grey2 = '#7c7c7c' // 字体灰
 const black1 = '#3b3b3d'  // 黑色
 const white1 ='white' // 白色
+const green = '#175850' // 绿色
 
 // 在这里添加颜色的运用，只需修改下方颜色就可以全局修改
 // 颜色运用-主题色、标题广告及footer背景色
@@ -23,7 +24,12 @@ const white1 ='white' // 白色
 // const font_color = yellow // 标题广告字体颜色
 // const font_color1 = yellow1 // 标题广告链接颜色
 // 标准主题色
-const main_color = blue  // 关联footer背景色以及标题广告上背景色，主题色
+// const main_color = blue  // 关联footer背景色以及标题广告上背景色，主题色
+// const main_color1 = blue1  // 标题广告下背景色，主题色
+// const font_color = white1  // 标题广告字体颜色
+// const font_color1 = white1 // 标题广告链接颜色
+
+const main_color = green  // 关联footer背景色以及标题广告上背景色，主题色
 const main_color1 = blue1  // 标题广告下背景色，主题色
 const font_color = white1  // 标题广告字体颜色
 const font_color1 = white1 // 标题广告链接颜色
