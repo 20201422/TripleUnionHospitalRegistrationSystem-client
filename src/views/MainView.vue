@@ -12,6 +12,7 @@
 
 import Header from "@/components/communion/Header.vue";
 import Footer from "@/components/communion/Footer.vue";
+
 </script>
 
 <style scoped>

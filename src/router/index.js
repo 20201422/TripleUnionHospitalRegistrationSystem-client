@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import Login from "@/views/LoginView.vue"
 import Main from "@/views/MainView.vue"
-
+import arrangementTable from '@/components/arrangementTable.vue';
 
 const routes = [
     {
@@ -25,6 +25,11 @@ const routes = [
             // { path: 'Work', component: Work, },
             // { path: 'Story', component: Story, },
         ],
+    },
+    {
+        path:'/arrangementTable',
+        name: 'arrangementTable',
+        component:arrangementTable,
     },
 
 ]
