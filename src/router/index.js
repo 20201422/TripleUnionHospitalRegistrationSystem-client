@@ -2,7 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import Login from "@/views/LoginView.vue"
 import Main from "@/views/MainView.vue"
-import arrangementTable from '@/components/arrangementTable.vue';
+import departmentHeaderMain from "@/components/departmentHeader/departmentHeaderMain.vue"
+import introduction from "@/components/departmentHeader/introduction.vue"
+import arrangement from "@/components/departmentHeader/arrangement.vue"
 
 const routes = [
     {
@@ -27,9 +29,14 @@ const routes = [
         ],
     },
     {
-        path:'/arrangementTable',
-        name: 'arrangementTable',
-        component:arrangementTable,
+        path:'/departmentHeaderMain',
+        name: 'departmentHeaderMain',
+        component:departmentHeaderMain,
+        children:[
+            { path: '/departmentHeaderMain',redirect:'/departmentHeaderMain/introduction'},
+            { path: 'introduction',component:introduction},
+            { path:'arrangement', component:arrangement}
+        ]
     },
 
 ]
