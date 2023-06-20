@@ -201,7 +201,8 @@ export default {
                         doctorLevel: this.selectedDoctorInfo.doctorLevel,
                         consultingRoomType: this.selectedConsultingRoomType,
                         date: this.selectedDate,
-                        amOrPm: this.selectedAmOrPm
+                        amOrPm: this.selectedAmOrPm,
+                        departmentId:this.departmentId
                     }
                 }).then(response => {
                     this.remainNumberSource = response.data.data
@@ -218,6 +219,21 @@ export default {
                     consultingRoomType: this.selectedConsultingRoomType
                 }
             }).then(response => {
+                this.$axios.get("/arrangement/addInfo", {
+                    params: {
+                        doctorId: this.selectedDoctor,
+                        consultingRoomId: this.selectedConsultingRoom,
+                        departmentId: this.departmentId,
+                        numberSourceDate: this.selectedDate,
+                        amOrPm: this.selectedAmOrPm,
+                        number: this.numberSourceNum,
+                        doctorLevel:this.selectedDoctorInfo.doctorLevel,
+                        
+                    }
+                }).then(response=>{
+                    
+                }).catch(error=>console.log(error))
+
                 var id = []
                 id = response.data.data  //号源id数组
 
@@ -237,6 +253,7 @@ export default {
                         })
                         location.reload()
                     }).catch(error => { console.log(error) });
+
                 }
             }).catch(error => { console.log(error) })
 
