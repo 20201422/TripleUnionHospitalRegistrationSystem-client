@@ -10,26 +10,29 @@
                     <label>{{ dateInfo.time }}</label>
                     <label>{{ dateInfo.week }}</label>
                 </div>
+
                 <div id='am' class="halfday">
                     <label>上午</label>
+
                     <div v-for="info in arrangementInfo">
                         <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
                             <div class="itemInfo">
                                 <label>{{ info.doctorName }}</label>&nbsp;&nbsp;
-                                <label>{{ info.numberSourceNumber }}</label>
+                                <label>{{ info.number }}</label>
                             </div>
                         </div>
                     </div>
 
                     <el-text class="button_text" type="primary" @click="addArrangement(dateInfo.time, '上午')">添加+</el-text>
                 </div>
+
                 <div id='pm' class="halfday">
                     <label>下午</label>
                     <div v-for="info in arrangementInfo">
                         <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
                             <div class="itemInfo">
                                 <label>{{ info.doctorName }}</label>&nbsp;&nbsp;
-                                <label>{{ info.numberSourceNumber }}</label>
+                                <label>{{ info.number }}</label>
                             </div>
                         </div>
                     </div>
@@ -52,11 +55,11 @@
         &nbsp;&nbsp;
         <el-select v-model="selectedConsultingRoom" clearable placeholder="选择诊室">
             <el-option v-for="room in consultingRooms" :key="room.consultingRoomId" :label="room.consultingRoomName"
-                :value="room.consultingRoomName" />
+                :value="room.consultingRoomId" />
         </el-select>
         <br><br>
         <el-text size="large">设置号源数量</el-text><br><br>
-        <el-input-number v-model="numberSourceNum" :min="1" :max="30" />
+        <el-input-number v-model="numberSourceNum" :min="6" :max="30" />
         <br><br>
         <el-text size="large">剩余号源数量 {{ remainNumberSource }}</el-text>
 
@@ -69,11 +72,12 @@
 
 <script>
 import Global_color from "@/app/Global_color.vue";
+import { ElMessage } from 'element-plus';
 export default {
     data() {
         return {
-            departmentId: '1002',
-            time:[],
+            departmentId: '1001',
+            time: [],
             week: [],
             date: [],
             arrangementInfo: [],
@@ -81,24 +85,23 @@ export default {
             selectedDate: '',
             selectedAmOrPm: '',
             selectedDoctor: '',
-            selectedDoctorInfo:'',
+            selectedDoctorInfo: '',
             selectedConsultingRoom: '',
+            selectedConsultingRoomType: '',
             doctors: [],
             consultingRooms: [],
-            numberSourceNum: '',
+            numberSourceNum: 0,
             remainNumberSource: 0, //剩余号源数量
 
             button_color2: Global_color.button_color,
         }
     },
     created() {
+        this.$axios.get("/arrangement/findByDepartmentId/" + this.departmentId).then(response => {
+            this.arrangementInfo = response.data.data
+        }).catch(error => { console.log(error) })
 
-        this.arrangementInfo = [
-            { arrangementId: 1, doctorName: '张如湾', numberSourceDate: '2023-06-27', amOrPm: '上午', numberSourceNumber: 20 },
-            { arrangementId: 1, doctorName: '杨洋', numberSourceDate: '2023-06-28', amOrPm: '下午', numberSourceNumber: 20 },
-            { arrangementId: 1, doctorName: '刘一鸣', numberSourceDate: '2023-06-29', amOrPm: '上午', numberSourceNumber: 20 }
-        ],
-            this.getNowDate()
+        this.getNowDate()
     },
 
     methods: {
@@ -155,13 +158,14 @@ export default {
             mon = d.getMonth() + 1;
             day = d.getDate();
 
-            let weekday=["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
+            let weekday = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
             this.week.push(weekday[d.getDay()])   //星期
             let s = year + "-" + (mon < 10 ? ('0' + mon) : mon) + "-" + (day < 10 ? ('0' + day) : day);
             return s;
         },
         addArrangement(date, amOrPm) {
             this.selectedDoctor = '';
+            this.selectedConsultingRoom = '';
             this.remainNumberSource = 0;
             this.addVisible = true;
             this.selectedDate = date;
@@ -179,35 +183,63 @@ export default {
             });
 
         },
-        selectTrigger(){
-            this.$axios.get("/doctor/findById/"+this.selectedDoctor).then(response => {
+        selectTrigger() {
+            this.$axios.get("/doctor/findById/" + this.selectedDoctor).then(response => {
                 this.selectedDoctorInfo = response.data.data
-                let consultingRoomType = ''
-                if(this.selectedDoctorInfo.doctorLevel == '主任医师'){
-                    consultingRoomType = '专家门诊'
+
+                if (this.selectedDoctorInfo.doctorLevel == '主任医师') {
+                    this.selectedConsultingRoomType = '专家门诊'
                 }
-                if(this.selectedDoctorInfo.doctorLevel == '主治医师'){
-                    consultingRoomType = '特需门诊'
+                if (this.selectedDoctorInfo.doctorLevel == '主治医师') {
+                    this.selectedConsultingRoomType = '特需门诊'
                 }
-                if(this.selectedDoctorInfo.doctorLevel == '医生'){
-                    consultingRoomType = '普通门诊'
+                if (this.selectedDoctorInfo.doctorLevel == '医生') {
+                    this.selectedConsultingRoomType = '普通门诊'
                 }
-                this.$axios.get("/arrangement/getRemainNumber",{
-                    params:{
-                        doctorLevel:this.selectedDoctorInfo.doctorLevel,
-                        consultingRoomType:consultingRoomType,
-                        date:this.selectedDate,
-                        amOrPm:this.selectedAmOrPm
+                this.$axios.get("/arrangement/getRemainNumber", {
+                    params: {
+                        doctorLevel: this.selectedDoctorInfo.doctorLevel,
+                        consultingRoomType: this.selectedConsultingRoomType,
+                        date: this.selectedDate,
+                        amOrPm: this.selectedAmOrPm
                     }
-                }).then(response =>{
+                }).then(response => {
                     this.remainNumberSource = response.data.data
-                }).catch(error =>{console.log(error)})
-            }).catch(error => {console.log(error)})
-            
-            
+                }).catch(error => { console.log(error) })
+            }).catch(error => { console.log(error) })
+
+
         },
         confirmAdd() {
-            location.reload()
+            this.$axios.get("/arrangement/getNumberSourceByDate", {
+                params: {
+                    date: this.selectedDate,
+                    amOrPm: this.selectedAmOrPm,
+                    consultingRoomType: this.selectedConsultingRoomType
+                }
+            }).then(response => {
+                var id = []
+                id = response.data.data  //号源id数组
+
+                var num = this.numberSourceNum / 6  //将所有号源数量均分到6个时段
+                for (var i = 0; i < id.length; i++) {
+                    this.$axios.get("/arrangement/add", {
+                        params: {
+                            doctorId: this.selectedDoctor,
+                            consultingRoomId: this.selectedConsultingRoom,
+                            numberSourceId: id[i],
+                            number: num
+                        }
+                    }).then(response => {
+                        ElMessage({
+                            message: '添加成功',
+                            type: 'success',
+                        })
+                        location.reload()
+                    }).catch(error => { console.log(error) });
+                }
+            }).catch(error => { console.log(error) })
+
         },
         cancel() {
             this.addVisible = false
@@ -232,7 +264,7 @@ export default {
 }
 
 .oneday {
-    height: 400px;
+    height: 500px;
     width: 100px;
     text-align: center;
 }
