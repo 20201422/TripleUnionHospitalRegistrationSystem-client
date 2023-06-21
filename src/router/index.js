@@ -6,7 +6,7 @@ import Main from "@/views/MainView.vue"
 import Department from "@/views/DepartmentView.vue"
 import Registration from "@/views/RegistrationView.vue";
 import MyRegistration from "@/views/MyRegistrationView.vue"
-import MedicalRecord from "@/views/MedicalRecordView.vue"
+import MedicalRecords from "@/views/MedicalRecordsView.vue"
 import departmentHeaderMain from "@/components/departmentHeader/departmentHeaderMain.vue"
 import doctorMain from "@/components/doctor/doctorMain.vue"
 import personalInformation from "@/components/doctor/personalInformation.vue"
@@ -55,9 +55,9 @@ const routes = [
         component: MyRegistration,
     },
     {
-        path: '/Patient/MedicalRecord',
-        name: 'MedicalRecord',
-        component: MedicalRecord,
+        path: '/Patient/MedicalRecords',
+        name: 'MedicalRecords',
+        component: MedicalRecords,
     },
     {
         path:'/departmentHeaderMain',
