@@ -5,6 +5,8 @@ import Main from "@/views/MainView.vue"
 import departmentHeaderMain from "@/components/departmentHeader/departmentHeaderMain.vue"
 import introduction from "@/components/departmentHeader/introduction.vue"
 import arrangement from "@/components/departmentHeader/arrangement.vue"
+import mangerMain from "@/components/Manger/MangerMain.vue"
+import businessTable from "@/components/Manger/BusinessTable.vue";
 
 const routes = [
     {
@@ -36,6 +38,14 @@ const routes = [
             { path: '/departmentHeaderMain',redirect:'/departmentHeaderMain/introduction'},
             { path: 'introduction',component:introduction},
             { path:'arrangement', component:arrangement}
+        ]
+    },
+    {
+        path:'/mangerMain',
+        name: 'mangerMain',
+        component:mangerMain,
+        children:[
+            { path: 'businessTable',component:businessTable},
         ]
     },
 
