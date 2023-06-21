@@ -4,15 +4,18 @@
         <div class="col-2">
             <el-menu style="height: 700px; margin-top: 48px;" active-text-color="#ffd04b" background-color="#175850"
                 text-color="#fff">
-                <label style="color: white; font-size: larger;margin: 30px 0px 30px 55px;">科室主任你好</label>
+                <label style="color: white; font-size: larger;margin: 30px 0px 30px 55px;">医生你好</label>
                 <el-menu-item index="1">
-                    <router-link to='/departmentHeaderMain/introduction' class="navs">科室信息</router-link>
+                    <router-link to='/doctorMain/personalInformation' class="navs">个人信息</router-link>
                 </el-menu-item>
                 <el-menu-item index="2">
-                    <router-link to='/departmentHeaderMain/arrangement' class="navs">排班管理</router-link>
+                    <router-link to='/doctorMain/patientQueue' class="navs">就诊人队列</router-link>
                 </el-menu-item>
                 <el-menu-item index="3">
-                    <router-link to='/departmentHeaderMain/changeshiftManage' class="navs">调班管理</router-link>
+                    <router-link to='/doctorMain/myArrangement' class="navs">我的排班</router-link>
+                </el-menu-item>
+                <el-menu-item index="4">
+                    <router-link to='/doctorMain/changeshiftApply' class="navs">调班申请</router-link>
                 </el-menu-item>
 
             </el-menu>

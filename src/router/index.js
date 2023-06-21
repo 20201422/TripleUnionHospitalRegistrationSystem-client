@@ -8,8 +8,14 @@ import Registration from "@/views/RegistrationView.vue";
 import MyRegistration from "@/views/MyRegistrationView.vue"
 import MedicalRecord from "@/views/MedicalRecordView.vue"
 import departmentHeaderMain from "@/components/departmentHeader/departmentHeaderMain.vue"
+import doctorMain from "@/components/doctor/doctorMain.vue"
+import personalInformation from "@/components/doctor/personalInformation.vue"
+import patientQueue from "@/components/doctor/patientQueue.vue"
+import myArrangement from "@/components/doctor/myArrangement.vue"
 import introduction from "@/components/departmentHeader/introduction.vue"
 import arrangement from "@/components/departmentHeader/arrangement.vue"
+import changeshiftApply from "@/components/doctor/changeshiftApply.vue"
+import changeshiftManage from "@/components/departmentHeader/changeshiftManage.vue"
 
 const routes = [
     {
@@ -58,7 +64,20 @@ const routes = [
         children:[
             { path: '/departmentHeaderMain',redirect:'/departmentHeaderMain/introduction'},
             { path: 'introduction',component:introduction},
-            { path:'arrangement', component:arrangement}
+            { path: 'arrangement', component:arrangement},
+            { path: 'changeshiftManage',component:changeshiftManage}
+        ]
+    },
+    {
+        path:'/doctorMain',
+        name: 'doctorMain',
+        component:doctorMain,
+        children: [
+            { path: '/doctorMain', redirect:'/doctorMain/personalInformation'},
+            { path: 'personalInformation' ,component:personalInformation},
+            { path: 'patientQueue', component: patientQueue},
+            { path: 'myArrangement' , component:myArrangement},
+            { path: 'changeshiftApply', component:changeshiftApply},
         ]
     },
 

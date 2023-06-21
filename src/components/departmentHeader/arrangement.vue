@@ -16,10 +16,15 @@
 
                     <div v-for="info in arrangementInfo">
                         <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
-                            <div class="itemInfo">
-                                <label>{{ info.doctorName }}</label>&nbsp;&nbsp;
-                                <label>{{ info.number }}</label>
-                            </div>
+                            <el-popconfirm confirm-button-text="查看" cancel-button-text="删除" title="请选择"
+                                @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
+                                <template #reference>
+                                    <el-tag :key="info.doctorName" type='info' size="large"
+                                        style="width: 100%;cursor: pointer;font-size:medium;">
+                                        {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                    </el-tag>
+                                </template>
+                            </el-popconfirm>
                         </div>
                     </div>
 
@@ -30,10 +35,16 @@
                     <label>下午</label>
                     <div v-for="info in arrangementInfo">
                         <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
-                            <div class="itemInfo">
-                                <label>{{ info.doctorName }}</label>&nbsp;&nbsp;
-                                <label>{{ info.number }}</label>
-                            </div>
+                            <el-popconfirm confirm-button-text="确认" cancel-button-text="取消" title="确认删除？"
+                                @confirm="deleteArrangment(info)">
+                                <template #reference>
+                                    <el-tag :key="info.doctorName" type='info' size="large"
+                                        style="width: 100%;cursor: pointer;font-size:medium;"
+                                        @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
+                                        {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                    </el-tag>
+                                </template>
+                            </el-popconfirm>
                         </div>
                     </div>
 
@@ -74,9 +85,11 @@
 import Global_color from "@/app/Global_color.vue";
 import { ElMessage } from 'element-plus';
 export default {
+
+
     data() {
         return {
-            departmentId: '1001',
+            departmentId: '1002',
             time: [],
             week: [],
             date: [],
@@ -105,6 +118,12 @@ export default {
     },
 
     methods: {
+        nameFormat(value) {
+            if (value.length < 3) { //如果是两个汉字
+                value = value.slice(0, 1) + '　' + value.slice(1) //拆分字符串并加入全角的空格
+            }
+            return value
+        },
         getNowDate() {
             var date = new Date();
             var year = date.getFullYear() // 年
@@ -183,6 +202,27 @@ export default {
             });
 
         },
+        deleteArrangment(info) {
+            console.log(info)
+            this.$axios.get("/arrangement/del", {
+                params: {
+                    doctorId: info.doctorId,
+                    consultingRoomId: info.consultingRoomId,
+                    numberSourceDate: info.numberSourceDate,
+                    amOrPm: info.amOrPm,
+                }
+            }).then(response => {
+                
+                location.reload()
+                ElMessage({
+                    message: '删除成功',
+                    type: 'success',
+                })
+            }).catch(error => { });
+        },
+        openArrangmentInfo(info) {
+
+        },
         selectTrigger() {
             this.$axios.get("/doctor/findById/" + this.selectedDoctor).then(response => {
                 this.selectedDoctorInfo = response.data.data
@@ -202,7 +242,7 @@ export default {
                         consultingRoomType: this.selectedConsultingRoomType,
                         date: this.selectedDate,
                         amOrPm: this.selectedAmOrPm,
-                        departmentId:this.departmentId
+                        departmentId: this.departmentId
                     }
                 }).then(response => {
                     this.remainNumberSource = response.data.data
@@ -212,6 +252,13 @@ export default {
 
         },
         confirmAdd() {
+            if (this.selectedDoctor == '' || this.selectedConsultingRoom == '') {
+                ElMessage({
+                    message: '添加失败，数据不能为空！',
+                    type: 'warning',
+                })
+                return;
+            }
             this.$axios.get("/arrangement/getNumberSourceByDate", {
                 params: {
                     date: this.selectedDate,
@@ -227,12 +274,12 @@ export default {
                         numberSourceDate: this.selectedDate,
                         amOrPm: this.selectedAmOrPm,
                         number: this.numberSourceNum,
-                        doctorLevel:this.selectedDoctorInfo.doctorLevel,
-                        
+                        doctorLevel: this.selectedDoctorInfo.doctorLevel,
+
                     }
-                }).then(response=>{
-                    
-                }).catch(error=>console.log(error))
+                }).then(response => {
+
+                }).catch(error => console.log(error))
 
                 var id = []
                 id = response.data.data  //号源id数组
@@ -247,14 +294,25 @@ export default {
                             number: num
                         }
                     }).then(response => {
+
+                    }).catch(error => { console.log(error) });
+
+                }
+                setTimeout(() => {
+                    this.$axios.get("/addNumberSourceDetail", {
+                        params: {
+                            doctorId: this.selectedDoctor,
+                            numberSourceDate: this.selectedDate,
+                            amOrPm: this.selectedAmOrPm
+                        }
+                    }).then(response => {
+                        location.reload()
                         ElMessage({
                             message: '添加成功',
                             type: 'success',
                         })
-                        location.reload()
-                    }).catch(error => { console.log(error) });
-
-                }
+                    }).catch(error => { })
+                }, 1000)
             }).catch(error => { console.log(error) })
 
         },
