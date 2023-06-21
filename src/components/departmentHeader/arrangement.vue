@@ -1,6 +1,6 @@
 <template>
     <div class="frame">
-        <el-button >排班记录</el-button>
+        <el-button>排班记录</el-button>
         <div style="margin-bottom: 10px ;clear: both;">
 
         </div>
@@ -10,26 +10,29 @@
                     <label>{{ dateInfo.time }}</label>
                     <label>{{ dateInfo.week }}</label>
                 </div>
+
                 <div id='am' class="halfday">
                     <label>上午</label>
+
                     <div v-for="info in arrangementInfo">
                         <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
                             <div class="itemInfo">
                                 <label>{{ info.doctorName }}</label>&nbsp;&nbsp;
-                                <label>{{ info.numberSourceNumber }}</label>
+                                <label>{{ info.number }}</label>
                             </div>
                         </div>
                     </div>
 
                     <el-text class="button_text" type="primary" @click="addArrangement(dateInfo.time, '上午')">添加+</el-text>
                 </div>
+
                 <div id='pm' class="halfday">
                     <label>下午</label>
                     <div v-for="info in arrangementInfo">
                         <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
                             <div class="itemInfo">
                                 <label>{{ info.doctorName }}</label>&nbsp;&nbsp;
-                                <label>{{ info.numberSourceNumber }}</label>
+                                <label>{{ info.number }}</label>
                             </div>
                         </div>
                     </div>
@@ -45,18 +48,20 @@
         <el-text size="large">{{ this.selectedDate }}</el-text>&nbsp;&nbsp;
         <el-text size="large">{{ this.selectedAmOrPm }}</el-text><br><br>
 
-        <el-select v-model="selectedDoctor" clearable placeholder="选择医生">
+        <el-select v-model="selectedDoctor" clearable placeholder="选择医生" @change="selectTrigger">
             <el-option v-for="doctor in doctors" :key="doctor.doctorId" :label="doctor.doctorName"
-                :value="doctor.doctorName" />
+                :value="doctor.doctorId" />
         </el-select>
         &nbsp;&nbsp;
         <el-select v-model="selectedConsultingRoom" clearable placeholder="选择诊室">
             <el-option v-for="room in consultingRooms" :key="room.consultingRoomId" :label="room.consultingRoomName"
-                :value="room.consultingRoomName" />
+                :value="room.consultingRoomId" />
         </el-select>
         <br><br>
         <el-text size="large">设置号源数量</el-text><br><br>
-        <el-input-number v-model="numberSourceNum" :min="1" :max="30" />
+        <el-input-number v-model="numberSourceNum" :min="6" :max="30" />
+        <br><br>
+        <el-text size="large">剩余号源数量 {{ remainNumberSource }}</el-text>
 
         <div style="margin-left: 81%;margin-top: 10px;">
             <el-button type="primary" @click="confirmAdd">确认</el-button>
@@ -67,52 +72,44 @@
 
 <script>
 import Global_color from "@/app/Global_color.vue";
+import { ElMessage } from 'element-plus';
 export default {
     data() {
         return {
-
-            time: ['2023-06-22', '2023-06-23', '2023-06-24', '2023-06-25', '2023-06-26', '2023-06-27', '2023-06-28'],
-            week: ['周六', '周日', '周一', '周二', '周三', '周四', '周五'],
+            departmentId: '1001',
+            time: [],
+            week: [],
             date: [],
             arrangementInfo: [],
             addVisible: false,
             selectedDate: '',
             selectedAmOrPm: '',
             selectedDoctor: '',
+            selectedDoctorInfo: '',
             selectedConsultingRoom: '',
+            selectedConsultingRoomType: '',
             doctors: [],
             consultingRooms: [],
-            numberSourceNum: '',
+            numberSourceNum: 0,
+            remainNumberSource: 0, //剩余号源数量
 
             button_color2: Global_color.button_color,
         }
     },
     created() {
-        this.date = [
-            { time: this.time[0], week: this.week[0] },
-            { time: this.time[1], week: this.week[1] },
-            { time: this.time[2], week: this.week[2] },
-            { time: this.time[3], week: this.week[3] },
-            { time: this.time[4], week: this.week[4] },
-            { time: this.time[5], week: this.week[5] },
-            { time: this.time[6], week: this.week[6] },
-        ],
-            this.arrangementInfo = [
-                { arrangementId: 1, doctorName: '张如湾', numberSourceDate: '2023-06-24', amOrPm: '上午', numberSourceNumber: 20 },
-                { arrangementId: 1, doctorName: '杨洋', numberSourceDate: '2023-06-24', amOrPm: '下午', numberSourceNumber: 20 },
-                { arrangementId: 1, doctorName: '刘一鸣', numberSourceDate: '2023-06-26', amOrPm: '上午', numberSourceNumber: 20 }
-            ]
+        this.$axios.get("/arrangement/findByDepartmentId/" + this.departmentId).then(response => {
+            this.arrangementInfo = response.data.data
+        }).catch(error => { console.log(error) })
+
+        this.getNowDate()
     },
+
     methods: {
         getNowDate() {
             var date = new Date();
-            var sign2 = ":";
             var year = date.getFullYear() // 年
             var month = date.getMonth() + 1; // 月
             var day = date.getDate(); // 日
-            var hour = date.getHours(); // 时
-            var minutes = date.getMinutes(); // 分
-            var seconds = date.getSeconds() //秒
             var weekArr = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期天'];
             var week = weekArr[date.getDay()];
             // 给一位数的数据前面加 “0”
@@ -122,37 +119,144 @@ export default {
             if (day >= 0 && day <= 9) {
                 day = "0" + day;
             }
-            if (hour >= 0 && hour <= 9) {
-                hour = "0" + hour;
+            var nowTime = year + "-" + month + "-" + day
+            for (let i = 7; i < 14; i++) {
+                this.time.push(this.getAfterDate(i, nowTime))
             }
-            if (minutes >= 0 && minutes <= 9) {
-                minutes = "0" + minutes;
-            }
-            if (seconds >= 0 && seconds <= 9) {
-                seconds = "0" + seconds;
-            }
-            this.nowTime = year + "-" + month + "-" + day + " " + hour + sign2 + minutes + sign2 + seconds;
+            this.date = [
+                { time: this.time[0], week: this.week[0] },
+                { time: this.time[1], week: this.week[1] },
+                { time: this.time[2], week: this.week[2] },
+                { time: this.time[3], week: this.week[3] },
+                { time: this.time[4], week: this.week[4] },
+                { time: this.time[5], week: this.week[5] },
+                { time: this.time[6], week: this.week[6] },
+            ]
         },
+        getAfterDate(num, time) {
+            let n = num;
+            let d = '';
+            if (time) {
+                d = new Date(time);
+            } else {
+                d = new Date();
+            }
+            let year = d.getFullYear();
+            let mon = d.getMonth() + 1;
+            let day = d.getDate();
+            let monthDay = new Date(year, mon, 0).getDate(); //当前一个月的天数
+            if (day + n >= monthDay) {
+                if (mon < 12) {
+                    mon = mon + 1;
+                } else {
+                    year = year + 1;
+                    mon = 1;
+                }
+            }
+            d.setDate(d.getDate() + n);
+            year = d.getFullYear();
+            mon = d.getMonth() + 1;
+            day = d.getDate();
 
+            let weekday = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+            this.week.push(weekday[d.getDay()])   //星期
+            let s = year + "-" + (mon < 10 ? ('0' + mon) : mon) + "-" + (day < 10 ? ('0' + day) : day);
+            return s;
+        },
         addArrangement(date, amOrPm) {
+            this.selectedDoctor = '';
+            this.selectedConsultingRoom = '';
+            this.remainNumberSource = 0;
             this.addVisible = true;
             this.selectedDate = date;
             this.selectedAmOrPm = amOrPm;
-            this.doctors = [
-                { doctorId: 1, doctorName: '医生1' },
-                { doctorId: 2, doctorName: '医生2' },
-                { doctorId: 3, doctorName: '医生3' },
-                { doctorId: 4, doctorName: '医生4' },
-            ],
-                this.consultingRooms = [
-                    { consultingRoomId: 1, consultingRoomName: '诊室1' },
-                    { consultingRoomId: 2, consultingRoomName: '诊室2' },
-                    { consultingRoomId: 3, consultingRoomName: '诊室3' },
-                    { consultingRoomId: 4, consultingRoomName: '诊室4' },
-                ]
+            this.$axios.get("/doctor/doctors/" + this.departmentId).then(response => {
+                this.doctors = response.data.data;
+            }).catch(error => {
+                console.log(error);
+            });
+
+            this.$axios.get("/consultingRoom/rooms/" + this.departmentId).then(response => {
+                this.consultingRooms = response.data.data;
+            }).catch(error => {
+                console.log(error);
+            });
+
         },
-        confirmAdd(){
-            location.reload()
+        selectTrigger() {
+            this.$axios.get("/doctor/findById/" + this.selectedDoctor).then(response => {
+                this.selectedDoctorInfo = response.data.data
+
+                if (this.selectedDoctorInfo.doctorLevel == '主任医师') {
+                    this.selectedConsultingRoomType = '专家门诊'
+                }
+                if (this.selectedDoctorInfo.doctorLevel == '主治医师') {
+                    this.selectedConsultingRoomType = '特需门诊'
+                }
+                if (this.selectedDoctorInfo.doctorLevel == '医生') {
+                    this.selectedConsultingRoomType = '普通门诊'
+                }
+                this.$axios.get("/arrangement/getRemainNumber", {
+                    params: {
+                        doctorLevel: this.selectedDoctorInfo.doctorLevel,
+                        consultingRoomType: this.selectedConsultingRoomType,
+                        date: this.selectedDate,
+                        amOrPm: this.selectedAmOrPm,
+                        departmentId:this.departmentId
+                    }
+                }).then(response => {
+                    this.remainNumberSource = response.data.data
+                }).catch(error => { console.log(error) })
+            }).catch(error => { console.log(error) })
+
+
+        },
+        confirmAdd() {
+            this.$axios.get("/arrangement/getNumberSourceByDate", {
+                params: {
+                    date: this.selectedDate,
+                    amOrPm: this.selectedAmOrPm,
+                    consultingRoomType: this.selectedConsultingRoomType
+                }
+            }).then(response => {
+                this.$axios.get("/arrangement/addInfo", {
+                    params: {
+                        doctorId: this.selectedDoctor,
+                        consultingRoomId: this.selectedConsultingRoom,
+                        departmentId: this.departmentId,
+                        numberSourceDate: this.selectedDate,
+                        amOrPm: this.selectedAmOrPm,
+                        number: this.numberSourceNum,
+                        doctorLevel:this.selectedDoctorInfo.doctorLevel,
+                        
+                    }
+                }).then(response=>{
+                    
+                }).catch(error=>console.log(error))
+
+                var id = []
+                id = response.data.data  //号源id数组
+
+                var num = this.numberSourceNum / 6  //将所有号源数量均分到6个时段
+                for (var i = 0; i < id.length; i++) {
+                    this.$axios.get("/arrangement/add", {
+                        params: {
+                            doctorId: this.selectedDoctor,
+                            consultingRoomId: this.selectedConsultingRoom,
+                            numberSourceId: id[i],
+                            number: num
+                        }
+                    }).then(response => {
+                        ElMessage({
+                            message: '添加成功',
+                            type: 'success',
+                        })
+                        location.reload()
+                    }).catch(error => { console.log(error) });
+
+                }
+            }).catch(error => { console.log(error) })
+
         },
         cancel() {
             this.addVisible = false
@@ -177,7 +281,7 @@ export default {
 }
 
 .oneday {
-    height: 400px;
+    height: 500px;
     width: 100px;
     text-align: center;
 }

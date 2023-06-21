@@ -1,7 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import Login from "@/views/LoginView.vue"
+import Register from "@/views/RegisterView.vue";
 import Main from "@/views/MainView.vue"
+import Department from "@/views/DepartmentView.vue"
+import Registration from "@/views/RegistrationView.vue";
+import MyRegistration from "@/views/MyRegistrationView.vue"
+import MedicalRecord from "@/views/MedicalRecordView.vue"
 import departmentHeaderMain from "@/components/departmentHeader/departmentHeaderMain.vue"
 import introduction from "@/components/departmentHeader/introduction.vue"
 import arrangement from "@/components/departmentHeader/arrangement.vue"
@@ -16,19 +21,37 @@ const routes = [
     {
         path: '/Login',
         name: 'Login',
-        component: Login
+        component: Login,
+    },
+    {
+        path: '/Register',
+        name: 'Register',
+        component: Register,
     },
     {
         path: '/Main',
         name: 'main',
         component: Main,
-        children: [
-            { path: '/Main', redirect: '', },
-            // { path: 'Project', component: Project, },
-            // { path: 'Iteration', component: Iteration, },
-            // { path: 'Work', component: Work, },
-            // { path: 'Story', component: Story, },
-        ],
+    },
+    {
+        path: '/Patient/Department',
+        name: 'Department',
+        component: Department,
+    },
+    {
+      path: '/Patient/Registration/:departmentId',
+        name: 'Registration',
+        component: Registration,
+    },
+    {
+        path: '/Patient/MyRegistration',
+        name: 'MyRegistration',
+        component: MyRegistration,
+    },
+    {
+        path: '/Patient/MedicalRecord',
+        name: 'MedicalRecord',
+        component: MedicalRecord,
     },
     {
         path:'/departmentHeaderMain',

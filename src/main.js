@@ -9,6 +9,15 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
 import "bootstrap-icons/font/bootstrap-icons.css"
 
+/* import the fontawesome core */
+import { library } from '@fortawesome/fontawesome-svg-core'
+/* import font awesome icon component */
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+/* import specific icons */
+import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
+/* add icons to the library */
+library.add(faUserSecret)
+
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import axios from '@/config/axios'
@@ -40,5 +49,7 @@ window.ResizeObserver = class ResizeObserver extends _ResizeObserver {
     }
 }
 
+
+app.component('font-awesome-icon', FontAwesomeIcon) // 注册 FontAwesome 图标组件
 app.use(router).use(ElementPlus).use(store).mount('#app')
 
