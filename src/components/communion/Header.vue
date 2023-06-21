@@ -1,6 +1,6 @@
 <template>
   <header>
-    <nav class="navbar navbar-light shadow fixed-top head" id="head">
+    <nav class="navbar navbar-light bg-light shadow fixed-top head" id="head">
       <a class="navbar-brand" href="/">
         <img src="../../assets/who-logo-white.svg" height="38" class="d-inline-block align-top" alt="Vue logo">
       </a>
@@ -9,16 +9,24 @@
         <span class="text-body-title-mini">预约挂号系统</span>
       </div>
       <el-dropdown @command="handleCommand">
-    <span class="el-dropdown-link">
-      Dropdown List
-    </span>
+        <span class="el-dropdown-link">
+          <font-awesome-icon :icon="['fas', 'bars']" style="color: #F2F2F2;" />
+        </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="a">登录</el-dropdown-item>
-            <el-dropdown-item command="b">Action 2</el-dropdown-item>
-            <el-dropdown-item command="c">Action 3</el-dropdown-item>
-            <el-dropdown-item command="d" disabled>Action 4</el-dropdown-item>
-            <el-dropdown-item command="e" divided>退出登录</el-dropdown-item>
+            <el-dropdown-item command="a">我要挂号</el-dropdown-item>
+            <el-dropdown-item command="b">查看挂号单</el-dropdown-item>
+            <el-dropdown-item command="c">管理就诊档案</el-dropdown-item>
+            <el-dropdown-item disabled divided>{{this.name}}</el-dropdown-item>
+            <el-dropdown-item command="d" divided>
+              <template v-if="isLoggedIn">
+                退出登录
+              </template>
+              <template v-else>
+                登录
+              </template>
+            </el-dropdown-item>
+
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -30,12 +38,31 @@
 <script>
 import Global_color from "@/app/Global_color.vue"
 import { ElMessage } from 'element-plus'
+import { faBars } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from "@fortawesome/fontawesome-svg-core";
 
 export default {
   name: "Header",
 
+  components: {
+    FontAwesomeIcon
+  },
+
   props: {
     msg: String,
+  },
+
+  computed: {
+    isLoggedIn() {
+      try {
+        return sessionStorage.getItem("user") !== "null";
+      } catch (e) {
+        // 处理错误情况
+        console.log(e);
+        return false;
+      }
+    }
   },
 
   data(){
@@ -43,21 +70,51 @@ export default {
       button_color: Global_color.button_color,
       button_color1: Global_color.button_color1,
       background_color:Global_color.main_color,
+
+      name: this.$store.state.userName
     }
   },
 
   methods:{
 
     handleCommand: function(command) {
-      ElMessage(`click on item ${command}`)
+      if (command === 'a') {
+        this.$router.push("/Patient/Department")
+      } else if (command === 'b') {
+        if (sessionStorage.getItem("user") === "null") {
+          this.$router.push("/Login")
+        } else {
+          this.$router.push("/Patient/MyRegistration")
+        }
+      } else if (command === 'c') {
+        if (sessionStorage.getItem("user") === "null") {
+          this.$router.push("/Login")
+        } else {
+          this.$router.push("/Patient/MedicalRecord")
+        }
+      } else if (command === 'd') {
+        if (sessionStorage.getItem("user") === "null") {
+          this.$router.push("/Login")
+        } else {  // 退出登录
+          sessionStorage.setItem("user", null);
+          this.$router.replace('/');//路由跳转至登录页面
+        }
+      }
     },
 
   },
 
 }
+
+// 添加到 Font Awesome 图标库中
+library.add(faBars)
 </script>
 
 <style scoped>
+header {
+  box-shadow: 1px 1px 20px v-bind(background_color);
+
+}
 .head{
   background-color: v-bind(background_color);
   background-image: url("@/assets/background.jpg");
@@ -80,23 +137,15 @@ export default {
 
 .example-showcase .el-dropdown-link {
   cursor: pointer;
-  color: var(--el-color-primary);
   display: flex;
   align-items: center;
 }
 
-.navbar-brand{
+.navbar-brand {
   cursor:pointer;
 }
 
-button{
-  color:v-bind(button_color);
-  border-color:v-bind(border_color);
-  border-radius:8px;
-}
-button:hover{
-  background-color:v-bind(button_color1);
-  border-color:v-bind(border_color1);
-  border-radius:8px;
+.el-dropdown-link {
+  font-size: 32px;
 }
 </style>
