@@ -16,6 +16,8 @@ import introduction from "@/components/departmentHeader/introduction.vue"
 import arrangement from "@/components/departmentHeader/arrangement.vue"
 import changeshiftApply from "@/components/doctor/changeshiftApply.vue"
 import changeshiftManage from "@/components/departmentHeader/changeshiftManage.vue"
+import mangerMain from "@/components/Manger/MangerMain.vue"
+import businessTable from "@/components/Manger/BusinessTable.vue";
 
 const routes = [
     {
@@ -78,6 +80,22 @@ const routes = [
             { path: 'patientQueue', component: patientQueue},
             { path: 'myArrangement' , component:myArrangement},
             { path: 'changeshiftApply', component:changeshiftApply},
+        ]
+    },
+    {
+        path:'/mangerMain',
+        name: 'mangerMain',
+        component:mangerMain,
+        children:[
+            { path: 'businessTable',component:businessTable},
+        ]
+    },
+    {
+        path:'/mangerMain',
+        name: 'mangerMain',
+        component:mangerMain,
+        children:[
+            { path: 'businessTable',component:businessTable},
         ]
     },
 
