@@ -87,7 +87,9 @@ export default {
       this.$axios.post('department/getAll').then((resp) => {
         this.departmentMap = resp.data.data
         // console.log(this.departmentMap)
-      })
+      }).catch(error => {
+        console.log(error); // 处理错误信息
+      });
     },
 
     goRegister: function (departmentId) {
@@ -105,7 +107,7 @@ export default {
 .department-list {
   width: 80%;
   border-radius: 18px;
-  background-color: v-bind(gray);
+  background-color: v-bind(grey);
   padding: 12px 32px 12px 32px;
   transition: all 0.45s;
 }
