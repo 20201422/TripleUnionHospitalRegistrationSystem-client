@@ -16,7 +16,7 @@
                         <div id='am' class="halfday">
                             <label>上午</label>
 
-                            <div v-for="info in arrangementInfo">
+                            <div v-for="info in arrangementInfo" :key="arrangementKey">
                                 <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
                                     <el-popconfirm confirm-button-text="查看" cancel-button-text="删除" title="请选择"
                                         @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
@@ -147,6 +147,7 @@ export default {
             allNumberSource1: 0, //专家门诊号源数量
             allNumberSource2: 0, //特需门诊号源数量
             allNumberSource3: 0, //普通门诊号源数量
+            arrangementKey: 0,   //用于界面刷新
 
             button_color2: Global_color.button_color,
         }
@@ -323,12 +324,12 @@ export default {
                     amOrPm: info.amOrPm,
                 }
             }).then(response => {
-
-                location.reload()
                 ElMessage({
                     message: '删除成功',
                     type: 'success',
                 })
+                location.reload()
+
             }).catch(error => { });
         },
         openArrangmentInfo(info) {
@@ -391,6 +392,10 @@ export default {
 
                     }
                 }).then(response => {
+                    this.$axios.get("/arrangement/findByDepartmentId/" + this.departmentId).then(response => {
+                        this.arrangementInfo = response.data.data
+                        this.arrangementKey++;
+                    }).catch(error => { console.log(error) })
 
                 }).catch(error => console.log(error))
 
@@ -411,6 +416,12 @@ export default {
                     }).catch(error => { console.log(error) });
 
                 }
+                ElMessage({
+                    message: '添加成功',
+                    type: 'success',
+                })
+                this.addVisible = false
+
                 setTimeout(() => {
                     this.$axios.get("/addNumberSourceDetail", {
                         params: {
@@ -419,13 +430,12 @@ export default {
                             amOrPm: this.selectedAmOrPm
                         }
                     }).then(response => {
-                        location.reload()
-                        ElMessage({
-                            message: '添加成功',
-                            type: 'success',
-                        })
+
                     }).catch(error => { })
                 }, 1000)
+
+
+
             }).catch(error => { console.log(error) })
 
         },
