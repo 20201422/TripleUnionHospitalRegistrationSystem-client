@@ -121,9 +121,4 @@ export default {
 .main {
   margin-top: 50px;
 }
-
-span {
-  color: red;
-  margin-left: 100px;
-}
 </style>

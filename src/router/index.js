@@ -14,12 +14,12 @@ import patientQueue from "@/components/doctor/patientQueue.vue"
 import myArrangement from "@/components/doctor/myArrangement.vue"
 import introduction from "@/components/departmentHeader/introduction.vue"
 import arrangement from "@/components/departmentHeader/arrangement.vue"
-import changeshiftApply from "@/components/doctor/changeshiftApply.vue"
-import changeshiftManage from "@/components/departmentHeader/changeshiftManage.vue"
+import changeShiftApply from "@/components/doctor/changeshiftApply.vue"
+import changeShiftManage from "@/components/departmentHeader/changeshiftManage.vue"
 import mangerMain from "@/components/manger/MangerMain.vue"
 import businessTable from "@/components/manger/BusinessTable.vue";
-import departmentReservationData from "@/components/Manger/DepartmentReservationData.vue"
-import doctorReservationData from "@/components/Manger/DoctorReservationData.vue"
+import departmentReservationData from "@/components/manger/DepartmentReservationData.vue"
+import doctorReservationData from "@/components/manger/DoctorReservationData.vue"
 
 const routes = [
     {
@@ -69,7 +69,7 @@ const routes = [
             { path: '/departmentHeaderMain',redirect:'/departmentHeaderMain/introduction'},
             { path: 'introduction',component:introduction},
             { path: 'arrangement', component:arrangement},
-            { path: 'changeshiftManage',component:changeshiftManage}
+            { path: 'changeShiftManage',component:changeShiftManage}
         ]
     },
     {
@@ -81,7 +81,7 @@ const routes = [
             { path: 'personalInformation' ,component:personalInformation},
             { path: 'patientQueue', component: patientQueue},
             { path: 'myArrangement' , component:myArrangement},
-            { path: 'changeshiftApply', component:changeshiftApply},
+            { path: 'changeShiftApply', component:changeShiftApply},
         ]
     },
     {
