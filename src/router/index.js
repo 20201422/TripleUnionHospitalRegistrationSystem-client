@@ -16,8 +16,8 @@ import introduction from "@/components/departmentHeader/introduction.vue"
 import arrangement from "@/components/departmentHeader/arrangement.vue"
 import changeshiftApply from "@/components/doctor/changeshiftApply.vue"
 import changeshiftManage from "@/components/departmentHeader/changeshiftManage.vue"
-import mangerMain from "@/components/Manger/MangerMain.vue"
-import businessTable from "@/components/Manger/BusinessTable.vue";
+import mangerMain from "@/components/manger/MangerMain.vue"
+import businessTable from "@/components/manger/BusinessTable.vue";
 
 const routes = [
     {

@@ -10,11 +10,13 @@
       </el-card>
     </el-space>
   </div>
+
   <div class="content">
     <el-empty description="暂无号源" v-if="Object.getOwnPropertyNames(this.numberSourceMap).length === 0"/>
     <ShowNumberSource :numberSourceMap="this.numberSourceMap" v-else
                       @openDoctorInfo="openDoctorHandler" @openRegistration="openRegistration"></ShowNumberSource>
   </div>
+
   <div v-if="dialogVisible">
     <ShowDoctor :doctorId = "doctorId" :dialogVisible = "dialogVisible" @closeDialog="closeDoctorHandler"></ShowDoctor>
   </div>
@@ -79,7 +81,7 @@ export default {
       const date = moment().add(i-1, 'days').format('YYYY-MM-DD');
 
       this.$axios.post('numberSource/patientGetNumberSource' ,  {
-        date: "2023-06-30",
+        date: date,
         departmentId: this.departmentId
       }).then((resp) => {
         this.numberSourceMap = resp.data.data;
