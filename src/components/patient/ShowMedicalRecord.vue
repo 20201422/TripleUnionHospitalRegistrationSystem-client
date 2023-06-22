@@ -1,4 +1,5 @@
 <template>
+  <el-empty description="暂无就诊档案" v-if="this.medicalRecords === 0"/>
   <el-scrollbar>
     <div v-for="(records, index) in this.medicalRecords" :key="index" class="records">
       <div v-for="record in records" :key="record.recordsId" class="record" @click="openUpdate(record)">
@@ -55,7 +56,10 @@ export default {
     getMedicalRecords: function() {
       this.$axios.get("patientMedicalRecords/findAll", {params: {patientId: this.$store.state.userId}}).then(resp => {
         this.medicalRecords = resp.data.data
-        // console.log(this.medicalRecords)
+        // console.log(this.medicalRecords[0].length)
+        if (this.medicalRecords[0].patientId === undefined && this.medicalRecords[0].length === 0) {
+          this.medicalRecords = 0
+        }
       }).catch(error => {
         console.log(error); // 处理错误信息
       });

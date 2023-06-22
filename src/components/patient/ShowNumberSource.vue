@@ -15,7 +15,7 @@
               <td class="numberSource-table-count">
                 {{item.amCounts > 6 ? '有号' : item.amCounts > 0 ? '紧缺' : '无号' }}
               </td>
-              <td :style="item.amCounts === 0 ? '' : { color: '#f7a04c' }">¥{{item.numberSourceFee}}</td>
+              <td :style="item.amCounts === 0 ? '' : { color: '#f7a04c' }">¥{{item.numberSourceFee.toFixed(2)}}</td>
               <td><el-button @click="openRegistration(item, '上午')" class="btn" :disabled="item.amCounts === 0">挂号</el-button></td>
             </tr>
             <tr :class="{'numberSource-table-pmCount-no': item.pmCounts === 0}">
@@ -24,7 +24,7 @@
               <td class="numberSource-table-count">
                 {{item.pmCounts > 6 ? '有号' : item.pmCounts > 0 ? '紧缺' : '无号'}}
               </td>
-              <td :style="item.pmCounts === 0 ? '' : { color: '#f7a04c' }">¥{{item.numberSourceFee}}</td>
+              <td :style="item.pmCounts === 0 ? '' : { color: '#f7a04c' }">¥{{item.numberSourceFee.toFixed(2)}}</td>
               <td><el-button @click="openRegistration(item, '下午')" class="btn" :disabled="item.pmCounts === 0">挂号</el-button></td>
             </tr>
           </table>
