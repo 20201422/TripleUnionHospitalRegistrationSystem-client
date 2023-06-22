@@ -73,7 +73,7 @@ export default {
       if (sessionStorage.getItem("user") === "null") {
         this.$router.push("/Login")
       } else {
-        this.$router.push('/Patient/MedicalRecord')
+        this.$router.push('/Patient/MedicalRecords')
       }
     },
   },
@@ -124,7 +124,7 @@ img {
   color: v-bind(green);
   font-size:18px;
   padding: 0 12px 0 12px;
-  background-color: v-bind(gray);
+  background-color: v-bind(grey);
   transition: all 0.45s;
 }
 .menu-child:hover {

@@ -95,7 +95,9 @@ export default {
 
             this.$router.go(-1)
           }
-        })
+        }).catch(error => {
+          console.log(error); // 处理错误信息
+        });
       }
 
     }
@@ -162,12 +164,15 @@ input {
 button {
   margin: 12px;
   padding: 10px 80px;
-  background-color: v-bind(green);
   border: 1px solid v-bind(green);
-  color: #F2F2F2;
   font-size: 16px;
   border-radius: 8px;
   cursor: pointer;
+  background-color: rgba(0, 128, 0, 0.26);
+  color: v-bind(green);
 }
-
+button:hover {
+  background-color: v-bind(green);
+  color: #F2F2F2;
+}
 </style>

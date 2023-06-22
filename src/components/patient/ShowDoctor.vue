@@ -135,8 +135,12 @@ export default {
         this.$axios.get("doctor/getDoctorArrange/"+this.doctorId).then(resp => {
           this.doctorArrange = resp.data.data;
           // console.log(this.doctorArrange)
-        })
-      })
+        }).catch(error => {
+          console.log(error); // 处理错误信息
+        });
+      }).catch(error => {
+        console.log(error); // 处理错误信息
+      });
     },
   },
 
@@ -163,7 +167,7 @@ export default {
   width: 100%;
 }
 .arrange-table th, .arrange-table td {
-  border: 1px solid v-bind(green);
+  border: 1px solid #175850;
   padding: 10px;
   text-align: center;
 }
@@ -176,8 +180,7 @@ export default {
   margin-left: 24px;
 }
 .doctor-avatar-border {
-  border: 1px solid v-bind(green);
-  border-right: gray;
+  border: 1px solid #175850;
   margin-right: 12px;
 }
 .doctor-info {

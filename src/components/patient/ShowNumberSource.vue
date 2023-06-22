@@ -1,6 +1,6 @@
 <template>
   <div v-for="(value, key) in this.numberSourceMap" :key="key" class="numberSourceMap">
-    <h3 style="margin-top: 4px">{{ key }}</h3>
+    <h3 style="margin-top: 4px">&nbsp;&nbsp;{{ key }}</h3>
     <el-scrollbar>
       <div class="numberSources">
         <div v-for="item in value" :key="item" class="numberSource">
@@ -15,8 +15,8 @@
               <td class="numberSource-table-count">
                 {{item.amCounts > 6 ? '有号' : item.amCounts > 0 ? '紧缺' : '无号' }}
               </td>
-              <td :style="item.amCounts === 0 ? '' : { color: '#f7a04c' }">¥{{item.numberSourceFee}}</td>
-              <td><el-button @click="openRegistration(item)" class="btn" :disabled="item.amCounts === 0">挂号</el-button></td>
+              <td :style="item.amCounts === 0 ? '' : { color: '#f7a04c' }">¥{{item.numberSourceFee.toFixed(2)}}</td>
+              <td><el-button @click="openRegistration(item, '上午')" class="btn" :disabled="item.amCounts === 0">挂号</el-button></td>
             </tr>
             <tr :class="{'numberSource-table-pmCount-no': item.pmCounts === 0}">
               <td>{{item.numberSourceDate}}</td>
@@ -24,8 +24,8 @@
               <td class="numberSource-table-count">
                 {{item.pmCounts > 6 ? '有号' : item.pmCounts > 0 ? '紧缺' : '无号'}}
               </td>
-              <td :style="item.pmCounts === 0 ? '' : { color: '#f7a04c' }">¥{{item.numberSourceFee}}</td>
-              <td><el-button @click="openRegistration(item)" class="btn" :disabled="item.pmCounts === 0">挂号</el-button></td>
+              <td :style="item.pmCounts === 0 ? '' : { color: '#f7a04c' }">¥{{item.numberSourceFee.toFixed(2)}}</td>
+              <td><el-button @click="openRegistration(item, '下午')" class="btn" :disabled="item.pmCounts === 0">挂号</el-button></td>
             </tr>
           </table>
         </div>
@@ -53,8 +53,8 @@ export default {
       emit("openDoctorInfo", doctorId); // 将事件名和参数作为参数传递给 emit 函数
     }
 
-    const openRegistration = (numberSource) => {
-      emit("openRegistration", numberSource); // 将事件名和参数作为参数传递给 emit 函数
+    const openRegistration = (numberSource, amOrPm) => {
+      emit("openRegistration", numberSource, amOrPm); // 将事件名和参数作为参数传递给 emit 函数
     }
 
     return {

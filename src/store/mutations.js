@@ -25,27 +25,3 @@ export const setToken = (state,token) => {
         state.token = '';
     }
 }
-
-
-export const project = (saveProject, project) => {
-    if (project != null) {
-        saveProject.projectId = JSON.parse(project).projectId;
-        saveProject.projectName = JSON.parse(project).projectName;
-        saveProject.projectState = JSON.parse(project).projectState;
-        saveProject.isProject = true;
-    } else if (project == null) {
-        sessionStorage.setItem("project", null)
-        sessionStorage.setItem("projectToken", '')
-        saveProject.currentProject = null
-        saveProject.isProject = false
-        saveProject.assign='';
-    }
-}
-
-export const setProjectToken = (saveProject, token) => {
-    if (token!=null){
-        saveProject.token = token;
-    }else {
-        saveProject.token = '';
-    }
-}

@@ -90,7 +90,7 @@ export default {
         if (sessionStorage.getItem("user") === "null") {
           this.$router.push("/Login")
         } else {
-          this.$router.push("/Patient/MedicalRecord")
+          this.$router.push("/Patient/MedicalRecords")
         }
       } else if (command === 'd') {
         if (sessionStorage.getItem("user") === "null") {

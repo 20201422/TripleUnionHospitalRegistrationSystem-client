@@ -10,16 +10,20 @@
       </el-card>
     </el-space>
   </div>
+
   <div class="content">
-    <ShowNumberSource :numberSourceMap="this.numberSourceMap"
+    <el-empty description="暂无号源" v-if="Object.getOwnPropertyNames(this.numberSourceMap).length === 0"/>
+    <ShowNumberSource :numberSourceMap="this.numberSourceMap" v-else
                       @openDoctorInfo="openDoctorHandler" @openRegistration="openRegistration"></ShowNumberSource>
   </div>
+
   <div v-if="dialogVisible">
     <ShowDoctor :doctorId = "doctorId" :dialogVisible = "dialogVisible" @closeDialog="closeDoctorHandler"></ShowDoctor>
   </div>
   <div v-if="dialogVisibleForRegion">
-    <Register :numberSource = "numberSource" :dialogVisibleForRegion = "dialogVisibleForRegion"
-              @closeDialog="closeRegistrationHandler"></Register>
+    <Registration :numberSource = "numberSource" :departmentId = "departmentId" :amOrPm = "amOrPm"
+                  :dialogVisibleForRegion = "dialogVisibleForRegion"
+              @closeDialog="closeRegistrationHandler"></Registration>
   </div>
 
   <Footer></Footer>
@@ -35,11 +39,11 @@ import ShowNumberSource from "@/components/patient/ShowNumberSource.vue";
 import moment from "moment/moment";
 import 'moment/locale/zh-cn';
 import ShowDoctor from "@/components/patient/ShowDoctor.vue";
-import Register from "@/components/patient/Registration.vue";
+import Registration from "@/components/patient/Registration.vue";
 
 export default {
   components: {
-    Register,
+    Registration,
     ShowDoctor,
     ShowNumberSource,
     Footer,
@@ -65,12 +69,60 @@ export default {
 
       dialogVisibleForRegion: false,
       numberSource: {},
+      amOrPm: '',
 
       moment: moment,
     }
   },
 
   methods: {
+
+    handleCardClick: function(i) {
+      const date = moment().add(i-1, 'days').format('YYYY-MM-DD');
+
+      this.$axios.post('numberSource/patientGetNumberSource' ,  {
+        date: date,
+        departmentId: this.departmentId
+      }).then((resp) => {
+        this.numberSourceMap = resp.data.data;
+        // console.log(resp.data.data)
+        // 定义门诊类型的顺序数组
+        const order = ['专家门诊', '普通门诊', '特需门诊'];
+        // 按照顺序排序门诊类型
+        this.numberSourceMap = Object.fromEntries(
+            Object.entries(this.numberSourceMap).sort(([a], [b]) => order.indexOf(a) - order.indexOf(b))
+        );
+
+        // console.log(this.numberSourceMap)
+      }).catch(error => {
+        console.log(error); // 处理错误信息
+      });
+    },
+
+    openDoctorHandler: function(doctorId) {
+      this.doctorId = doctorId
+      this.dialogVisible = true
+    },
+
+    closeDoctorHandler: function() {
+      this.dialogVisible = false
+    },
+
+    openRegistration: function(numberSource, amOrPm) {
+      if (sessionStorage.getItem("user") === "null") {
+        this.$router.push("/Login")
+      } else {
+        this.numberSource = numberSource
+        this.amOrPm = amOrPm
+        this.dialogVisibleForRegion = true
+      }
+    },
+
+    closeRegistrationHandler: function() {
+      this.dialogVisibleForRegion = false
+    },
+
+    // 判断是否已经登录状态
     isLogin() {
       // 判断sessionStorage中是否有登录信息
       if (sessionStorage.getItem("user") != null && sessionStorage.getItem("userToken")) {
@@ -84,49 +136,20 @@ export default {
       return this.$store.getters.isLogin;
     },
 
-    handleCardClick: function(i) {
-      const date = moment().add(i-1, 'days').format('YYYY-MM-DD');
-
-      this.$axios.post('numberSource/patientGetNumberSource' ,  {
-        date: "2023-06-30",
-        departmentId: this.departmentId
-      }).then((resp) => {
-        this.numberSourceMap = resp.data.data;
-
-        // 定义门诊类型的顺序数组
-        const order = ['专家门诊', '普通门诊', '特需门诊'];
-        // 按照顺序排序门诊类型
-        this.numberSourceMap = Object.fromEntries(
-            Object.entries(this.numberSourceMap).sort(([a], [b]) => order.indexOf(a) - order.indexOf(b))
-        );
-        // console.log(this.numberSourceMap)
-      })
-    },
-
-    openDoctorHandler: function(doctorId) {
-      this.doctorId = doctorId
-      this.dialogVisible = true
-    },
-
-    closeDoctorHandler: function() {
-      this.dialogVisible = false
-    },
-
-    openRegistration: function(numberSource) {
-      if (sessionStorage.getItem("user") === "null") {
-        this.$router.push("/Login")
+    // 通过登录状态来判断用户是否登录执行相关的操作
+    ver() {
+      if (this.$store.state.isLogin) {
+        console.log("已登录")
       } else {
-        this.numberSource = numberSource
-        this.dialogVisibleForRegion = true
+        //如果没有登录就返回登录界面
+        // this.$router.push("/")
       }
     },
-
-    closeRegistrationHandler: function() {
-      this.dialogVisibleForRegion = false
-    }
   },
 
   created() {
+    this.isLogin();
+    this.ver();
     this.isLogin()
     this.handleCardClick(1)
   }
@@ -148,5 +171,17 @@ export default {
   justify-content: space-evenly;
   align-items: center;
   flex-direction: column;
+}
+
+.el-card.is-always-shadow {
+  box-shadow: #175850;
+  background-color: rgba(23, 88, 80, 0.07);
+  border-color: #175850;
+}
+.el-card.is-always-shadow:hover {
+  box-shadow: #175850;
+  background-image: url("@/assets/background.jpg");
+  border-color: #175850;
+  color: #F2F2F2;
 }
 </style>
