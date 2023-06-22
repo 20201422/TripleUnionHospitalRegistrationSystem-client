@@ -142,7 +142,7 @@ export default {
       this.form.aMOrPm = this.amOrPm
       // console.log(this.form)
 
-      if (new Date().getHours() < 5) {  // 5:00之前不可预约
+      if (new Date().getHours() < 1) {  // 5:00之前不可预约
         ElMessage({
           message: '5:00开放预约号源',
           type: 'warning',
