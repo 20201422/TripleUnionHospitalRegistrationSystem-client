@@ -21,8 +21,12 @@
         </el-sub-menu>
         <el-sub-menu index="4">
           <template #title>数据分析和统计</template>
-          <el-menu-item index="4-1">item one</el-menu-item>
-          <el-menu-item index="4-2">item two</el-menu-item>
+          <RouterLink to='/mangerMain/departmentReservationData' class="navs">
+            <el-menu-item index="4-1">科室预约数据统计</el-menu-item>
+          </RouterLink>
+          <RouterLink to='/mangerMain/doctorReservationData' class="navs">
+            <el-menu-item index="4-2">医生预约数据统计</el-menu-item>
+          </RouterLink>
         </el-sub-menu>
       </el-menu>
     </div>

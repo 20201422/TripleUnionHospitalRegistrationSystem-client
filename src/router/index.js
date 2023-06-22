@@ -18,6 +18,8 @@ import changeshiftApply from "@/components/doctor/changeshiftApply.vue"
 import changeshiftManage from "@/components/departmentHeader/changeshiftManage.vue"
 import mangerMain from "@/components/manger/MangerMain.vue"
 import businessTable from "@/components/manger/BusinessTable.vue";
+import departmentReservationData from "@/components/Manger/DepartmentReservationData.vue"
+import doctorReservationData from "@/components/Manger/DoctorReservationData.vue"
 
 const routes = [
     {
@@ -96,6 +98,8 @@ const routes = [
         component:mangerMain,
         children:[
             { path: 'businessTable',component:businessTable},
+            { path: 'departmentReservationData',component:departmentReservationData},
+            { path: 'doctorReservationData',component:doctorReservationData},
         ]
     },
 
