@@ -3,7 +3,8 @@
   <div class="registration">
     <el-empty description="暂无挂号单" v-if="this.registrations === 0"/>
     <el-table :data="this.registrations" @row-click="openMyRegistration" max-height="520">
-      <el-table-column fixed prop="recordsName" label="就诊人姓名" width="120" align="center" sortable />
+      <el-table-column fixed prop="recordsName" label="就诊人姓名" width="120" align="center"
+                       :filters="this.patients" :filter-method="filterTagForPatient" filter-placement="bottom-end" />
       <el-table-column prop="recordsPatientSex" label="就诊人性别" width="100" align="center" />
       <el-table-column prop="doctorName" label="医生姓名" width="110" align="center" sortable />
       <el-table-column prop="departmentName" label="科室名称" width="110" align="center" sortable />
@@ -16,7 +17,8 @@
           ¥{{ row.numberSourceFee }}
         </template>
       </el-table-column>
-      <el-table-column prop="registrationState" label="挂号状态" width="110" align="center" sortable>
+      <el-table-column prop="registrationState" label="挂号状态" width="110" align="center"
+                       :filters="registrationType" :filter-method="filterTagForDoctor" filter-placement="bottom-end">
         <template #default="{ row }">
           <el-tag :type="getTagType(row.registrationState)">{{row.registrationState}}</el-tag>
         </template>
@@ -38,8 +40,27 @@ export default {
       emit("openMyRegistration", registration); // 将事件名和参数作为参数传递给 emit 函数
     }
 
+    const registrationType = [
+      { text: '待支付', value: '待支付' },
+      { text: '未支付', value: '未支付' },
+      { text: '成功', value: '成功' },
+      { text: '取消', value: '取消' },
+      { text: '退号', value: '退号' },
+    ]
+
+    const filterTagForPatient = (value, row) => {
+      return row.recordsName === value
+    }
+    const filterTagForDoctor = (value, row) => {
+      return row.doctorName === value
+    }
+
+
     return {
       openMyRegistration,
+      registrationType,
+      filterTagForPatient,
+      filterTagForDoctor,
     }
   },
 
@@ -51,6 +72,7 @@ export default {
       font_grey: Global_color.font_grey,
 
       registrations: [],
+      patients: [],
 
     }
   },
@@ -66,10 +88,9 @@ export default {
         case '待支付':
           return '';
         case '未支付':
+          return 'danger';
         case '退号':
           return 'warning';
-        case '失败':
-          return 'danger';
         default:
           return '';
       }
@@ -79,6 +100,16 @@ export default {
       this.$axios.get("registration/getAll", {params: {patientId: this.$store.state.userId}}).then(resp => {
         this.registrations = resp.data.data;
         // console.log(this.registrations)
+
+        const patientMap = new Map()
+        this.registrations.forEach((obj, index) => {
+          patientMap.set(obj.recordsName, obj.recordsName)
+        })
+        for (const [key, value] of patientMap) {
+          this.patients.push({ text: key, value: value });
+        }
+        // console.log(this.patients)
+
         if (this.registrations[0].aMOrPm === undefined && this.registrations[0].length === 0) {
           this.registrations = 0
         }
