@@ -16,7 +16,7 @@ import introduction from "@/components/departmentHeader/introduction.vue"
 import arrangement from "@/components/departmentHeader/arrangement.vue"
 import changeShiftApply from "@/components/doctor/changeshiftApply.vue"
 import changeShiftManage from "@/components/departmentHeader/changeshiftManage.vue"
-import mangerMain from "@/components/manger/MangerMain.vue"
+import managerMain from "@/components/manger/ManagerMain.vue"
 import businessTable from "@/components/manger/BusinessTable.vue";
 import departmentReservationData from "@/components/manger/DepartmentReservationData.vue"
 import doctorReservationData from "@/components/manger/DoctorReservationData.vue"
@@ -85,17 +85,17 @@ const routes = [
         ]
     },
     {
-        path:'/mangerMain',
-        name: 'mangerMain',
-        component:mangerMain,
+        path:'/managerMain',
+        name: 'managerMain',
+        component:managerMain,
         children:[
             { path: 'businessTable',component:businessTable},
         ]
     },
     {
-        path:'/mangerMain',
-        name: 'mangerMain',
-        component:mangerMain,
+        path:'/managerMain',
+        name: 'managerMain',
+        component:managerMain,
         children:[
             { path: 'businessTable',component:businessTable},
             { path: 'departmentReservationData',component:departmentReservationData},

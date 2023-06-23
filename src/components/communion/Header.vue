@@ -97,7 +97,7 @@ export default {
           this.$router.push("/Login")
         } else {  // 退出登录
           this.$store.dispatch("setUser", null);
-          this.$router.replace('/');//路由跳转至登录页面
+          this.$router.replace('/');
         }
       }
     },

@@ -106,6 +106,10 @@ export default {
             if (data.userType ==='管理员') {
               this.$router.replace('/mangerMain')
             }
+
+            setTimeout(() => {
+              this.loading = false
+            }, 10000)
           }
         }).catch(error => {
           console.log(error); // 处理错误信息

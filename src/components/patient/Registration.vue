@@ -169,14 +169,24 @@ export default {
           this.$axios.post('registration/register', this.form).then(resp => {
             // console.log(resp.data.data); // 处理响应数据
 
-            if (resp.data.data === -1) {
+            if (resp.data.data === 0) {
               ElMessage({
                 message: '您的档案当前在黑名单，暂不支持线上预约',
                 type: 'warning',
               })
-            } else if (resp.data.data === 0) {
+            } else if (resp.data.data === -1) {
+              ElMessage({
+                message: '您有未支付的挂号单，请支付后再挂号',
+                type: 'warning',
+              })
+            } else if (resp.data.data === -2) {
               ElMessage({
                 message: '请一个小时后再预约该科室',
+                type: 'warning',
+              })
+            } else if (resp.data.data === -3) {
+              ElMessage({
+                message: '未支付的号源超过三次，今日不可线上预约',
                 type: 'warning',
               })
             } else {
