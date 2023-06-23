@@ -2,17 +2,17 @@
 
   <Header></Header>
 
-  <div class="content" v-loading="loading">
+  <div class="content" v-loading.fullscreen.lock="loading">
     <div class="content-register">
       <h2>用户登录</h2>
       <form>
         <div class="form-group">
           <label for="patientPhoneNumber">账号：</label>
-          <input type="text" id="patientPhoneNumber" v-model="patient.patientPhoneNumber" placeholder="请输入账号" />
+          <input type="text" id="patientPhoneNumber" v-model="logigInfo.id" placeholder="请输入账号" />
         </div>
         <div class="form-group">
           <label for="patientPassword">密码：</label>
-          <input type="password" id="patientPassword" v-model="patient.patientPassword" placeholder="请输入密码" />
+          <input type="password" id="patientPassword" v-model="logigInfo.password" placeholder="请输入密码" />
         </div>
         <button type="submit" @click.prevent="login">登录</button>
         <button type="submit" @click.prevent="register">注册</button>
@@ -45,9 +45,9 @@ export default {
       green: Global_color.main_color,
       font_grey: Global_color.font_grey,
 
-      patient: {
-        patientPhoneNumber: '',
-        patientPassword: '',
+      logigInfo: {
+        id: '',
+        password: '',
       },
       user: {
         userId: '',
@@ -67,25 +67,26 @@ export default {
     },
 
     login() {
-      if (this.patient.patientName === '') { // 账号为空
+      if (this.logigInfo.id === '') { // 账号为空
         ElMessage({message: '账号为空', type: 'warning',})
-      } else if (this.patient.patientPassword === '') {    // 密码为空
+      } else if (this.logigInfo.password === '') {    // 密码为空
         ElMessage({message: '密码为空', type: 'warning',})
       } else {
         this.loading = true
-        this.$axios.post("user/login", this.patient).then(resp => {
+        this.$axios.post("user/login", {id: this.logigInfo.id, password: this.logigInfo.password}).then(resp => {
           let data = resp.data.data
-          if (data === 0) { // 用户名不存在
+          // console.log(data)
+          if (data === -1) { // 用户名不存在
             this.loading = false
             ElMessage.error('用户不存在❗')
-          } else if (data === 1) {  // 密码错误
+          } else if (data === 0) {  // 密码错误
             this.loading = false
             ElMessage.error('密码错误❗')
           } else {
-            this.user.userId = data.patientId
-            this.user.userName = data.patientName
-            this.user.userEmail = data.patientEmail
-            this.user.userPhoneNumber = data.patientPhoneNumber
+            this.user.userId = data.userId
+            this.user.userName = data.userName
+            this.user.userEmail = data.userEmail
+            this.user.userPhoneNumber = data.userPhoneNumber
             //将用户名放入sessionStorage中
             sessionStorage.setItem("user", JSON.stringify(this.user));
             sessionStorage.setItem("userToken", data.patientName)
@@ -93,7 +94,18 @@ export default {
             this.$store.dispatch("setUser", JSON.stringify(this.user));
             this.$store.dispatch("setToken", data.patientPassword);
 
-            this.$router.go(-1)
+            if (data.userType ==='就诊人') {
+              this.$router.go(-1)
+            }
+            if (data.userType ==='科室主任') {
+              this.$router.replace('/departmentHeaderMain')
+            }
+            if (data.userType ==='医生') {
+              this.$router.replace('/doctorMain')
+            }
+            if (data.userType ==='管理员') {
+              this.$router.replace('/mangerMain')
+            }
           }
         }).catch(error => {
           console.log(error); // 处理错误信息
