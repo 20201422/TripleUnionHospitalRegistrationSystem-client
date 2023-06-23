@@ -14,9 +14,9 @@
                 <el-menu-item index="3">
                     <router-link to='/doctorMain/myArrangement' class="navs">我的排班</router-link>
                 </el-menu-item>
-                <el-menu-item index="4">
+                <!-- <el-menu-item index="4">
                     <router-link to='/doctorMain/changeshiftApply' class="navs">调班申请</router-link>
-                </el-menu-item>
+                </el-menu-item> -->
 
             </el-menu>
         </div>

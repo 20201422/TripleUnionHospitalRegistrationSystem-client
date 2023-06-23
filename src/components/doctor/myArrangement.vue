@@ -17,12 +17,26 @@
 
                 <div id='am' class="halfday">
                     <label>上午</label>
-
+                    <div v-for="info in arrangementInfo">
+                        <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
+                            <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
+                                {{ info.consultingRoomName }}<br><br>
+                                {{ info.number }}
+                            </el-tag>
+                        </div>
+                    </div>
                 </div>
 
                 <div id='pm' class="halfday">
                     <label>下午</label>
-
+                    <div v-for="info in arrangementInfo">
+                        <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
+                            <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
+                                {{ info.consultingRoomName }}<br><br>
+                                {{ info.number }}
+                            </el-tag>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -33,9 +47,11 @@
 export default {
     data() {
         return {
+            doctorId: '1002005',
             date: [],
             today: '',
             dateKey: 0,  //用于界面刷新
+            arrangementInfo: [],
         }
     },
     beforeMount() {
@@ -48,7 +64,10 @@ export default {
             { time: dateList[4], week: '星期五' },
             { time: dateList[5], week: '星期六' },
             { time: dateList[6], week: '星期日' }
-        ]
+        ],
+            this.$axios.get("/arrangement/findByDoctorId/" + this.doctorId).then(response => {
+                this.arrangementInfo = response.data.data
+            }).catch(error => { })
     },
     methods: {
         nameFormat(value) {
@@ -150,7 +169,9 @@ export default {
                 { time: dateList[6], week: '星期日' }
             ]
             this.dateKey++
-        }
+        },
+
+
     }
 }
 </script>
@@ -195,10 +216,11 @@ label {
 }
 
 .arrangementTag {
-    width: 96%;
+    width: 95%;
+    min-height: 180px;
     margin-bottom: 3px;
     cursor: pointer;
-    font-size: medium;
+    font-size: small;
     color: #000;
 }
 </style>

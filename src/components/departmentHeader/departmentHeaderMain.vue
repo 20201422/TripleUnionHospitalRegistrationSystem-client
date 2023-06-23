@@ -11,9 +11,9 @@
                 <el-menu-item index="2">
                     <router-link to='/departmentHeaderMain/arrangement' class="navs">排班管理</router-link>
                 </el-menu-item>
-                <el-menu-item index="3">
+                <!-- <el-menu-item index="3">
                     <router-link to='/departmentHeaderMain/changeshiftManage' class="navs">调班管理</router-link>
-                </el-menu-item>
+                </el-menu-item> -->
 
             </el-menu>
         </div>
