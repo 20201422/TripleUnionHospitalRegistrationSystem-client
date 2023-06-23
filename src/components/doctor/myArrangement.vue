@@ -1,6 +1,6 @@
 <template>
     <div class="frame">
-        <div style="margin-left: 19%;">
+        <div style="margin-left: 21%;">
             <el-button @click="lastWeek">上一周</el-button>
             <el-button @click="nowWeek">本周</el-button>
             <el-button @click="nextWeek">下一周</el-button>
@@ -47,7 +47,7 @@
 export default {
     data() {
         return {
-            doctorId: '1002005',
+            doctorId: this.$store.state.userId,
             date: [],
             today: '',
             dateKey: 0,  //用于界面刷新
@@ -178,7 +178,7 @@ export default {
 
 <style scoped>
 .frame {
-    margin-left: 5%;
+    margin-left: 15%;
     margin-top: 6%;
 }
 

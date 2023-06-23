@@ -4,7 +4,7 @@
         <div class="col-2">
             <el-menu style="height: 700px; margin-top: 48px;" active-text-color="#ffd04b" background-color="#175850"
                 text-color="#fff">
-                <label style="color: white; font-size: larger;margin: 30px 0px 30px 55px;">科室主任你好</label>
+                <label style="color: white; font-size: larger;margin: 30px 0px 30px 30px;">科室主任{{this.$store.state.userName}}你好</label>
                 <el-menu-item index="1">
                     <router-link to='/departmentHeaderMain/introduction' class="navs">科室信息</router-link>
                 </el-menu-item>
@@ -35,7 +35,7 @@ export default {
     },
     data() {
         return {
-
+            departmentHeaderId:this.$store.state.userId
         }
     },
     methods: {
