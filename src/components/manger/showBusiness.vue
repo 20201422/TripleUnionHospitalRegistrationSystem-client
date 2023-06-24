@@ -102,7 +102,7 @@ export default {
   methods: {
 
     init() {
-      this.$axios.post('/businessList').then(res => {
+      this.$axios.post('/business/businessList').then(res => {
         let datas = res.data.data
         datas.forEach(data => {
           if (!this.deptList.includes(data.departmentName)) {
@@ -139,7 +139,7 @@ export default {
 
     getBusiness() {
       //分页查询业务信息
-      this.$axios.get('/businessPart', {
+      this.$axios.get('/business/businessPart', {
         params: {
           page: this.pagination.current,
           size: this.pagination.size,
@@ -178,7 +178,7 @@ export default {
     },
 
     sumbit() {
-      this.$axios.get('/addBusiness', {
+      this.$axios.get('/business/addBusiness', {
         params: {
           departmentId: this.deptname,
           consultingRoomType: this.roomtype,

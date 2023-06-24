@@ -103,7 +103,7 @@ export default {
   methods: {
 
     init() {
-      this.$axios.post('/numberSource').then(res => {
+      this.$axios.post('/numberSource/numberSource').then(res => {
         let datas = res.data.data
         datas.forEach(data => {
           if (!this.deptList.includes(data.departmentName)) {
@@ -126,7 +126,7 @@ export default {
     },
 
     initDepartment() {
-      this.$axios.post('/businessList').then(res => {
+      this.$axios.post('/business/businessList').then(res => {
         let datas = res.data.data
         let set = new Set(datas.map(item => item.departmentName))
         this.deptnameList = Array.from(set)
@@ -141,8 +141,8 @@ export default {
     },
 
     getNumberSource() {
-      //分页查询业务信息
-      this.$axios.get('/numberSourcePage', {
+      //分页查询号源信息
+      this.$axios.get('/numberSource/numberSourcePage', {
         params: {
           page: this.pagination.current,
           size: this.pagination.size,
@@ -173,7 +173,7 @@ export default {
       }
       else {
         this.pickerdisabled = false;
-        this.$axios.get('/forbidDate', {
+        this.$axios.get('/numberSource/forbidDate', {
           params: {
             departmentName: this.deptname,
             consultingRoomType: this.roomtype,
@@ -213,7 +213,7 @@ export default {
     },
 
     sumbit() {
-      this.$axios.get('/addNumberSource', {
+      this.$axios.get('/numberSource/addNumberSource', {
         params: {
           departmentName: this.deptname,
           consultingRoomType: this.roomtype,

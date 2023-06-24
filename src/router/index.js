@@ -18,10 +18,11 @@ import arrangement from "@/components/departmentHeader/arrangement.vue"
 import changeShiftApply from "@/components/doctor/changeshiftApply.vue"
 import changeShiftManage from "@/components/departmentHeader/changeshiftManage.vue"
 import managerMain from "@/components/manger/ManagerMain.vue"
-import businessTable from "@/components/manger/BusinessTable.vue";
+import showBusiness from "@/components/manger/showBusiness.vue";
 import departmentReservationData from "@/components/manger/DepartmentReservationData.vue"
 import doctorReservationData from "@/components/manger/DoctorReservationData.vue"
-import numberSource from "@/components/manger/NumberSource.vue"
+import showNumberSource from "@/components/manger/showNumberSource.vue"
+import showBlockList from "@/components/manger/showBlockList.vue"
 const routes = [
     {
         path: '/',
@@ -95,10 +96,11 @@ const routes = [
         name: 'mangerMain',
         component:managerMain,
         children:[
-            { path: 'businessTable',component:businessTable},
+            { path: 'showBusiness',component:showBusiness},
             { path: 'departmentReservationData',component:departmentReservationData},
             { path: 'doctorReservationData',component:doctorReservationData},
-            { path: 'numberSource',component:numberSource},
+            { path: 'showNumberSource',component:showNumberSource},
+            { path: 'showBlockList',component:showBlockList},
         ]
     },
 

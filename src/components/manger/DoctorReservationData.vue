@@ -53,7 +53,7 @@ export default {
 
   methods: {
     init() {
-      this.$axios.post('/doctorRegistrationData').then(res => {
+      this.$axios.post('/numberSourceDetail/doctorRegistrationData').then(res => {
         let datas = res.data.data;
         datas.forEach(data => {
           if (!this.deptList.includes(data.departmentName)) {
@@ -74,7 +74,7 @@ export default {
       })
     },
     getData(dept, week,doctorName) {
-      this.$axios.post('/doctorRegistrationData').then(res => {
+      this.$axios.post('/numberSourceDetail/doctorRegistrationData').then(res => {
         let datas = res.data.data;
         const count = [0, 0, 0, 0, 0, 0, 0]
         datas.forEach(data => {
@@ -187,7 +187,7 @@ export default {
 }
 export function download() {
   return axios({
-    url: '/export',
+    url: '/excel/export',
     method: 'post',
     data: "1",
     responseType: 'blob'

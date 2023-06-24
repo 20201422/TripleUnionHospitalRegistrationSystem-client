@@ -547,7 +547,7 @@ export default {
                 this.addVisible = false
 
                 setTimeout(() => {
-                    this.$axios.get("/addNumberSourceDetail", {
+                    this.$axios.get("/numberSourceDetail/addNumberSourceDetail", {
                         params: {
                             doctorId: this.selectedDoctor,
                             numberSourceDate: this.selectedDate,
