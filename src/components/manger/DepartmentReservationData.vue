@@ -1,5 +1,5 @@
 <template>
-  <div class="main"></div>
+  <div class="charts"></div>
   <el-select class="select" @change="getData(dept, week)" v-model="week" clearable>
     <el-option v-for="option in weekList" :value="option">
       {{ option }}
@@ -196,11 +196,11 @@ export function download() {
 .pie {
   width: 100%;
   height: 450px;
-  margin-top: 100px;
+  margin-top: 80px;
 }
 
-.main {
-  margin-top: 50px;
+.charts {
+  margin-top: 60px;
 }
 
 .el-st {
