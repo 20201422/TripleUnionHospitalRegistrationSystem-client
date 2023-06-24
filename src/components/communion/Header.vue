@@ -17,7 +17,7 @@
             <el-dropdown-item command="a">我要挂号</el-dropdown-item>
             <el-dropdown-item command="b">查看挂号单</el-dropdown-item>
             <el-dropdown-item command="c">管理就诊档案</el-dropdown-item>
-            <el-dropdown-item disabled divided>{{this.name}}</el-dropdown-item>
+            <el-dropdown-item disabled divided v-if="!this.isLogin()">{{this.name}}</el-dropdown-item>
             <el-dropdown-item command="d" divided>
               <template v-if="isLoggedIn">
                 退出登录
@@ -81,26 +81,30 @@ export default {
       if (command === 'a') {
         this.$router.push("/Patient/Department")
       } else if (command === 'b') {
-        if (sessionStorage.getItem("user") === "null") {
+        if (this.isLogin()) {
           this.$router.push("/Login")
         } else {
           this.$router.push("/Patient/MyRegistration")
         }
       } else if (command === 'c') {
-        if (sessionStorage.getItem("user") === "null") {
+        if (this.isLogin()) {
           this.$router.push("/Login")
         } else {
           this.$router.push("/Patient/MedicalRecords")
         }
       } else if (command === 'd') {
-        if (sessionStorage.getItem("user") === "null") {
+        if (this.isLogin()) {
           this.$router.push("/Login")
         } else {  // 退出登录
-          sessionStorage.setItem("user", null);
-          this.$router.replace('/');//路由跳转至登录页面
+          this.$store.dispatch("setUser", null);
+          this.$router.replace('/');
         }
       }
     },
+
+    isLogin: function () {
+      return sessionStorage.getItem("user") === "null"
+    }
 
   },
 

@@ -115,7 +115,7 @@ export default {
         console.log("已登录")
       } else {
         //如果没有登录就返回登录界面
-        this.$router.push("/")
+        this.$router.replace("/Login")
       }
     },
   },
