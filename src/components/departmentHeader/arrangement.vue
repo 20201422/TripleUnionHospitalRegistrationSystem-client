@@ -106,20 +106,20 @@
         <el-text size="large">诊室：{{ this.selectedArrangementInfo.consultingRoomName }}</el-text><br><br>
         <el-text size="large">号源数量</el-text><br>
         <div v-if="selectedArrangementInfo.amOrPm == '上午'">
-            <el-text size="large"> 8:00~ 8:30 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large"> 8:30~ 9:00 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large"> 9:00~ 9:30 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large"> 9:30~10:00 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large">10:00~10:30 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large">10:30~11:00 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
+            <el-text size="large">&nbsp; 8:00 ~ &nbsp; 8:30 &nbsp; {{ selectedDoctorInfoNum[0] }}</el-text><br>
+            <el-text size="large">&nbsp; 8:30 ~ &nbsp; 9:00 &nbsp; {{ selectedDoctorInfoNum[1] }}</el-text><br>
+            <el-text size="large">&nbsp; 9:00 ~ &nbsp; 9:30 &nbsp; {{ selectedDoctorInfoNum[2] }}</el-text><br>
+            <el-text size="large">&nbsp; 9:30 ~ 10:00 &nbsp; {{ selectedDoctorInfoNum[3] }}</el-text><br>
+            <el-text size="large">10:00 ~ 10:30 &nbsp; {{ selectedDoctorInfoNum[4] }}</el-text><br>
+            <el-text size="large">10:30 ~ 11:00 &nbsp; {{ selectedDoctorInfoNum[5] }}</el-text><br>
         </div>
         <div v-if="selectedArrangementInfo.amOrPm == '下午'">
-            <el-text size="large"> 14:00~ 14:30 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large"> 14:30~ 15:00 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large"> 15:00~ 15:30 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large"> 15:30~16:00 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large">16:00~16:30 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large">16:30~17:00 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
+            <el-text size="large"> 14:00 ~ 14:30 &nbsp; {{ selectedDoctorInfoNum[0] }}</el-text><br>
+            <el-text size="large"> 14:30 ~ 15:00 &nbsp; {{ selectedDoctorInfoNum[1] }}</el-text><br>
+            <el-text size="large"> 15:00 ~ 15:30 &nbsp; {{ selectedDoctorInfoNum[2] }}</el-text><br>
+            <el-text size="large"> 15:30 ~ 16:00 &nbsp; {{ selectedDoctorInfoNum[3] }}</el-text><br>
+            <el-text size="large"> 16:00 ~ 16:30 &nbsp; {{ selectedDoctorInfoNum[4] }}</el-text><br>
+            <el-text size="large"> 16:30 ~ 17:00 &nbsp; {{ selectedDoctorInfoNum[5] }}</el-text><br>
         </div>
     </el-dialog>
 
@@ -139,7 +139,7 @@
                             <div v-for="info in arrangementInfo" :key="arrangementKey">
                                 <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
                                     <el-popconfirm confirm-button-text="查看" cancel-button-text="取消" title="请选择"
-                                         @confirm="openArrangmentInfo(info)">
+                                        @confirm="openArrangmentInfo(info)">
                                         <template #reference>
                                             <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
                                                 {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
@@ -154,8 +154,8 @@
                             <label>下午</label>
                             <div v-for="info in arrangementInfo">
                                 <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
-                                    <el-popconfirm confirm-button-text="查看" cancel-button-text="取消"  title="请选择"
-                                         @confirm="openArrangmentInfo(info)">
+                                    <el-popconfirm confirm-button-text="查看" cancel-button-text="取消" title="请选择"
+                                        @confirm="openArrangmentInfo(info)">
                                         <template #reference>
                                             <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
                                                 {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
@@ -192,11 +192,12 @@ export default {
             arrangementInfo: [],
             addVisible: false,
             detailVisible: false,
-            recordsVisible:false,
+            recordsVisible: false,
             selectedDate: '',
             selectedAmOrPm: '',
             selectedDoctor: '',
             selectedDoctorInfo: '',
+            selectedDoctorInfoNum: [],//查看排班的每个时段的号源数量
             selectedConsultingRoom: '',
             selectedConsultingRoomType: '',
             selectedArrangementInfo: {},  //用于查看排班详情数据渲染
@@ -427,7 +428,17 @@ export default {
         openArrangmentInfo(info) {
             this.selectedArrangementInfo = info;
             this.detailVisible = true;
-
+            var count = info.number  //总号源数
+            var cores = 6    //时间段数量
+            for (var idx = 0; idx < cores; idx++) {
+                var min = parseInt(count * idx / cores);
+                var max = parseInt(count * (idx + 1) / cores);
+                var averageNum = 0
+                for (var i = min; i < max; i++) {
+                    averageNum++
+                }
+                this.selectedDoctorInfoNum[idx] = averageNum
+            }
         },
         selectTrigger() {
             this.$axios.get("/doctor/findById/" + this.selectedDoctor).then(response => {
@@ -494,20 +505,41 @@ export default {
                 var id = []
                 id = response.data.data  //号源id数组
 
-                var num = this.numberSourceNum / 6  //将所有号源数量均分到6个时段
-                for (var i = 0; i < id.length; i++) {
+                var num = parseInt(this.numberSourceNum / 6)  //将所有号源数量均分到6个时段
+                //平均分配算法 --- 将所有号源均分到每个时段
+                var count = this.numberSourceNum  //总号源数
+                var cores = id.length    //时间段数量
+                for (var idx = 0; idx < cores; idx++) {
+                    var min = parseInt(count * idx / cores);
+                    var max = parseInt(count * (idx + 1) / cores);
+                    var averageNum = 0
+                    for (var i = min; i < max; i++) {
+                        averageNum++
+                    }
+                    // console.log(id[idx]+":"+averageNum)
                     this.$axios.get("/arrangement/add", {
                         params: {
                             doctorId: this.selectedDoctor,
                             consultingRoomId: this.selectedConsultingRoom,
-                            numberSourceId: id[i],
-                            number: num
+                            numberSourceId: id[idx],
+                            number: averageNum
                         }
                     }).then(response => {
 
-                    }).catch(error => { console.log(error) });
-
+                    }).catch(error => { console.log(error) })
                 }
+                // for (var i = 0; i < id.length; i++) {
+                //     this.$axios.get("/arrangement/add", {
+                //         params: {
+                //             doctorId: this.selectedDoctor,
+                //             consultingRoomId: this.selectedConsultingRoom,
+                //             numberSourceId: id[i],
+                //             number: num
+                //         }
+                //     }).then(response => {
+
+                //     }).catch(error => { console.log(error) })
+                // }
                 ElMessage({
                     message: '添加成功',
                     type: 'success',

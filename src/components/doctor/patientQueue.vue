@@ -37,21 +37,24 @@ export default {
         }
     },
     created() {
-        this.$axios.get("/patientQueue/getByDoctorId/" + this.doctorId).then(response => {
-            this.patientQueue = response.data.data
-            this.pagination.total = response.data.data.length
-        }).catch(error => { })
+        this.getPatientQueue()
     },
     methods: {
+        getPatientQueue() {
+            this.$axios.get("/patientQueue/getByDoctorId/" + this.doctorId).then(response => {
+                this.patientQueue = response.data.data
+                this.pagination.total = response.data.data.length
+            }).catch(error => { })
+        },
         //改变当前记录条数
         handleSizeChange(val) {
             this.pagination.size = val;
-            this.getBusinessInfo();
+            this.getPatientQueue()
         },
         //改变当前页码，重新发送请求
         handleCurrentChange(val) {
             this.pagination.current = val;
-            this.getBusinessInfo();
+            this.getPatientQueue()
         },
     }
 }
