@@ -138,8 +138,8 @@
 
                             <div v-for="info in arrangementInfo" :key="arrangementKey">
                                 <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
-                                    <el-popconfirm confirm-button-text="查看" cancel-button-text="删除" title="请选择"
-                                        @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
+                                    <el-popconfirm confirm-button-text="查看" cancel-button-text="取消" title="请选择"
+                                         @confirm="openArrangmentInfo(info)">
                                         <template #reference>
                                             <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
                                                 {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
@@ -154,8 +154,8 @@
                             <label>下午</label>
                             <div v-for="info in arrangementInfo">
                                 <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
-                                    <el-popconfirm confirm-button-text="查看" cancel-button-text="删除" title="请选择"
-                                        @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
+                                    <el-popconfirm confirm-button-text="查看" cancel-button-text="取消"  title="请选择"
+                                         @confirm="openArrangmentInfo(info)">
                                         <template #reference>
                                             <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
                                                 {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
