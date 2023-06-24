@@ -20,7 +20,7 @@ import managerMain from "@/components/manger/ManagerMain.vue"
 import businessTable from "@/components/manger/BusinessTable.vue";
 import departmentReservationData from "@/components/manger/DepartmentReservationData.vue"
 import doctorReservationData from "@/components/manger/DoctorReservationData.vue"
-
+import numberSource from "@/components/manger/NumberSource.vue"
 const routes = [
     {
         path: '/',
@@ -92,6 +92,7 @@ const routes = [
             { path: 'businessTable',component:businessTable},
             { path: 'departmentReservationData',component:departmentReservationData},
             { path: 'doctorReservationData',component:doctorReservationData},
+            { path: 'numberSource',component:numberSource},
         ]
     },
 
