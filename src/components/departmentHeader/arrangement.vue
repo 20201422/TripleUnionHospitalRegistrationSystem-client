@@ -2,11 +2,11 @@
     <div class="row" style="margin-top: 30px;">
         <div class="col-8">
             <div class="frame">
-                <el-button>排班记录</el-button>
+                <el-button @click="recordsVisible = true">排班记录</el-button>
                 <div style="margin-bottom: 10px ;clear: both;">
 
                 </div>
-                <el-scrollbar height = "520px">
+                <el-scrollbar height="520px">
                     <div class="scrollbar-flex-content">
                         <div v-for="dateInfo in date" class="arrangementtable">
                             <div id="oneDay" class="oneday">
@@ -106,21 +106,69 @@
         <el-text size="large">诊室：{{ this.selectedArrangementInfo.consultingRoomName }}</el-text><br><br>
         <el-text size="large">号源数量</el-text><br>
         <div v-if="selectedArrangementInfo.amOrPm == '上午'">
-            <el-text size="large"> 8:00~ 8:30 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large"> 8:30~ 9:00 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large"> 9:00~ 9:30 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large"> 9:30~10:00 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large">10:00~10:30 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large">10:30~11:00 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
+            <el-text size="large">&nbsp; 8:00 ~ &nbsp; 8:30 &nbsp; {{ selectedDoctorInfoNum[0] }}</el-text><br>
+            <el-text size="large">&nbsp; 8:30 ~ &nbsp; 9:00 &nbsp; {{ selectedDoctorInfoNum[1] }}</el-text><br>
+            <el-text size="large">&nbsp; 9:00 ~ &nbsp; 9:30 &nbsp; {{ selectedDoctorInfoNum[2] }}</el-text><br>
+            <el-text size="large">&nbsp; 9:30 ~ 10:00 &nbsp; {{ selectedDoctorInfoNum[3] }}</el-text><br>
+            <el-text size="large">10:00 ~ 10:30 &nbsp; {{ selectedDoctorInfoNum[4] }}</el-text><br>
+            <el-text size="large">10:30 ~ 11:00 &nbsp; {{ selectedDoctorInfoNum[5] }}</el-text><br>
         </div>
         <div v-if="selectedArrangementInfo.amOrPm == '下午'">
-            <el-text size="large"> 14:00~ 14:30 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large"> 14:30~ 15:00 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large"> 15:00~ 15:30 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large"> 15:30~16:00 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large">16:00~16:30 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
-            <el-text size="large">16:30~17:00 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
+            <el-text size="large"> 14:00 ~ 14:30 &nbsp; {{ selectedDoctorInfoNum[0] }}</el-text><br>
+            <el-text size="large"> 14:30 ~ 15:00 &nbsp; {{ selectedDoctorInfoNum[1] }}</el-text><br>
+            <el-text size="large"> 15:00 ~ 15:30 &nbsp; {{ selectedDoctorInfoNum[2] }}</el-text><br>
+            <el-text size="large"> 15:30 ~ 16:00 &nbsp; {{ selectedDoctorInfoNum[3] }}</el-text><br>
+            <el-text size="large"> 16:00 ~ 16:30 &nbsp; {{ selectedDoctorInfoNum[4] }}</el-text><br>
+            <el-text size="large"> 16:30 ~ 17:00 &nbsp; {{ selectedDoctorInfoNum[5] }}</el-text><br>
         </div>
+    </el-dialog>
+
+    <el-dialog v-model="recordsVisible" style="min-height: 300px;" width="70%" title="排班记录" append-to-body draggable="true">
+        <el-scrollbar height="520px">
+            <div class="scrollbar-flex-content">
+                <div v-for="dateInfo in beforeDate" class="arrangementtable">
+                    <div id="oneDay" class="oneday">
+                        <div id='date'>
+                            <label>{{ dateInfo.time }}</label>
+                            <label>{{ dateInfo.week }}</label>
+                        </div>
+
+                        <div id='am' class="halfday">
+                            <label>上午</label>
+
+                            <div v-for="info in arrangementInfo" :key="arrangementKey">
+                                <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
+                                    <el-popconfirm confirm-button-text="查看" cancel-button-text="取消" title="请选择"
+                                        @confirm="openArrangmentInfo(info)">
+                                        <template #reference>
+                                            <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
+                                                {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                            </el-tag>
+                                        </template>
+                                    </el-popconfirm>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id='pm' class="halfday">
+                            <label>下午</label>
+                            <div v-for="info in arrangementInfo">
+                                <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
+                                    <el-popconfirm confirm-button-text="查看" cancel-button-text="取消" title="请选择"
+                                        @confirm="openArrangmentInfo(info)">
+                                        <template #reference>
+                                            <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
+                                                {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                            </el-tag>
+                                        </template>
+                                    </el-popconfirm>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </el-scrollbar>
     </el-dialog>
 </template>
 
@@ -138,13 +186,18 @@ export default {
             time: [],
             week: [],
             date: [],
+            beforeTime: [],
+            beforeWeek: [],
+            beforeDate: [],
             arrangementInfo: [],
             addVisible: false,
             detailVisible: false,
+            recordsVisible: false,
             selectedDate: '',
             selectedAmOrPm: '',
             selectedDoctor: '',
             selectedDoctorInfo: '',
+            selectedDoctorInfoNum: [],//查看排班的每个时段的号源数量
             selectedConsultingRoom: '',
             selectedConsultingRoomType: '',
             selectedArrangementInfo: {},  //用于查看排班详情数据渲染
@@ -198,12 +251,15 @@ export default {
             // for (let i = 7; i < 14; i++) {  //后14天
             //     this.time.push(this.getAfterDate(i, nowTime))
             // }
-            for (let i = 0; i < 14; i++) {  //后7天
+            for (let i = 7; i < 21; i++) {  //后14天
                 this.time.push(this.getAfterDate(i, nowTime))
             }
-            // for (let i = 7; i >0 ; i--) {  //前七天
-            //     this.time.push(this.getBeforeDate(i, nowTime))
-            // }
+            for (let i = 7; i > 0; i--) {  //前7天
+                this.beforeTime.push(this.getBeforeDate(i, nowTime))
+            }
+            for (let i = 0; i < 7; i++) {  //后七天
+                this.beforeTime.push(this.getAfterDate(i, nowTime))
+            }
             this.date = [
                 { time: this.time[0], week: this.week[0] },
                 { time: this.time[1], week: this.week[1] },
@@ -219,6 +275,22 @@ export default {
                 { time: this.time[11], week: this.week[11] },
                 { time: this.time[12], week: this.week[12] },
                 { time: this.time[13], week: this.week[13] },
+            ]
+            this.beforeDate = [
+                { time: this.beforeTime[0], week: this.week[14] },
+                { time: this.beforeTime[1], week: this.week[15] },
+                { time: this.beforeTime[2], week: this.week[16] },
+                { time: this.beforeTime[3], week: this.week[17] },
+                { time: this.beforeTime[4], week: this.week[18] },
+                { time: this.beforeTime[5], week: this.week[19] },
+                { time: this.beforeTime[6], week: this.week[20] },
+                { time: this.beforeTime[7], week: this.week[21] },
+                { time: this.beforeTime[8], week: this.week[22] },
+                { time: this.beforeTime[9], week: this.week[23] },
+                { time: this.beforeTime[10], week: this.week[24] },
+                { time: this.beforeTime[11], week: this.week[25] },
+                { time: this.beforeTime[12], week: this.week[26] },
+                { time: this.beforeTime[13], week: this.week[27] },
             ]
         },
         getAfterDate(num, time) {
@@ -356,7 +428,17 @@ export default {
         openArrangmentInfo(info) {
             this.selectedArrangementInfo = info;
             this.detailVisible = true;
-
+            var count = info.number  //总号源数
+            var cores = 6    //时间段数量
+            for (var idx = 0; idx < cores; idx++) {
+                var min = parseInt(count * idx / cores);
+                var max = parseInt(count * (idx + 1) / cores);
+                var averageNum = 0
+                for (var i = min; i < max; i++) {
+                    averageNum++
+                }
+                this.selectedDoctorInfoNum[idx] = averageNum
+            }
         },
         selectTrigger() {
             this.$axios.get("/doctor/findById/" + this.selectedDoctor).then(response => {
@@ -423,20 +505,41 @@ export default {
                 var id = []
                 id = response.data.data  //号源id数组
 
-                var num = this.numberSourceNum / 6  //将所有号源数量均分到6个时段
-                for (var i = 0; i < id.length; i++) {
+                var num = parseInt(this.numberSourceNum / 6)  //将所有号源数量均分到6个时段
+                //平均分配算法 --- 将所有号源均分到每个时段
+                var count = this.numberSourceNum  //总号源数
+                var cores = id.length    //时间段数量
+                for (var idx = 0; idx < cores; idx++) {
+                    var min = parseInt(count * idx / cores);
+                    var max = parseInt(count * (idx + 1) / cores);
+                    var averageNum = 0
+                    for (var i = min; i < max; i++) {
+                        averageNum++
+                    }
+                    // console.log(id[idx]+":"+averageNum)
                     this.$axios.get("/arrangement/add", {
                         params: {
                             doctorId: this.selectedDoctor,
                             consultingRoomId: this.selectedConsultingRoom,
-                            numberSourceId: id[i],
-                            number: num
+                            numberSourceId: id[idx],
+                            number: averageNum
                         }
                     }).then(response => {
 
-                    }).catch(error => { console.log(error) });
-
+                    }).catch(error => { console.log(error) })
                 }
+                // for (var i = 0; i < id.length; i++) {
+                //     this.$axios.get("/arrangement/add", {
+                //         params: {
+                //             doctorId: this.selectedDoctor,
+                //             consultingRoomId: this.selectedConsultingRoom,
+                //             numberSourceId: id[i],
+                //             number: num
+                //         }
+                //     }).then(response => {
+
+                //     }).catch(error => { console.log(error) })
+                // }
                 ElMessage({
                     message: '添加成功',
                     type: 'success',
@@ -477,9 +580,11 @@ export default {
     margin-left: 5%;
     margin-top: 5%;
 }
+
 .scrollbar-flex-content {
-  display: flex;
+    display: flex;
 }
+
 .arrangementtable {
     /* float: left; */
     /* display: flex; */

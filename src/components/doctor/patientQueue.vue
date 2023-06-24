@@ -1,9 +1,10 @@
 <template>
     <div style="margin-top: 12%;margin-left: 6%;">
-        <el-table :data="patientQueue" style="width: 85%" height="320">
+        <el-table :data="patientQueue" style="width: 85%" height="320"
+            :default-sort="{ prop: 'numberSourceDate', order: 'descending' }">
             <el-table-column prop="patientName" label="挂号人姓名" width="120" align="center" />
             <el-table-column prop="recordsName" label="就诊人姓名" width="120 " align="center" />
-            <el-table-column prop="numberSourceDate" label="预约日期" width="150" align="center" />
+            <el-table-column prop="numberSourceDate" sortable label="预约日期" width="150" align="center" />
             <el-table-column prop="consultationPeriod" label="预约时段" width="150" align="center" />
             <el-table-column prop="recordsPatientSex" label="性别" width="80" align="center" />
             <el-table-column prop="recordsPatientAddress" label="地址" width="220" align="center" />
@@ -15,6 +16,10 @@
                 </template>
             </el-table-column>
         </el-table>
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+            :current-page="pagination.current" :page-sizes="[6, 10]" :page-size="pagination.size"
+            layout="total, sizes, prev, pager, next, jumper" :total="pagination.total" class="page">
+        </el-pagination>
     </div>
 </template>
 
@@ -23,80 +28,34 @@ export default {
     data() {
         return {
             doctorId: this.$store.state.userId,
-            patientQueue: [
-                // {
-                //     serialNumber: 1,
-                //     date: '2023-06-22',
-                //     timeFrame: '8:30~9:00',
-                //     patientName:'Jack',
-                //     recordsName: 'Tom',
-                //     sex: '男',
-                //     address: 'No. 189, Grove St, Los Angeles',
-                // },
-                // {
-                //     serialNumber: 2,
-                //     date: '2023-06-22',
-                //     timeFrame: '8:30~9:00',
-                //     patientName:'Jack',
-                //     recordsName: 'Tom',
-                //     sex: '男',
-                //     address: 'No. 189, Grove St, Los Angeles',
-                // },
-                // {
-                //     serialNumber: 3,
-                //     date: '2023-06-22',
-                //     timeFrame: '8:30~9:00',
-                //     patientName:'Jack',
-                //     recordsName: 'Tom',
-                //     sex: '男',
-                //     address: 'No. 189, Grove St, Los Angeles',
-                // },
-                // {
-                //     serialNumber: 4,
-                //     date: '2023-06-22',
-                //     timeFrame: '8:30~9:00',
-                //     patientName:'Jack',
-                //     recordsName: 'Tom',
-                //     sex: '男',
-                //     address: 'No. 189, Grove St, Los Angeles',
-                // },
-                // {
-                //     serialNumber: 5,
-                //     date: '2023-06-22',
-                //     timeFrame: '8:30~9:00',
-                //     patientName:'Jack',
-                //     recordsName: 'Tom',
-                //     sex: '男',
-                //     address: 'No. 189, Grove St, Los Angeles',
-                // },
-                // {
-                //     serialNumber: 6,
-                //     date: '2023-06-22',
-                //     timeFrame: '8:30~9:00',
-                //     patientName:'Jack',
-                //     recordsName: 'Tom',
-                //     sex: '男',
-                //     address: 'No. 189, Grove St, Los Angeles',
-                // },
-                // {
-                //     serialNumber: 7,
-                //     date: '2023-06-22',
-                //     timeFrame: '8:30~9:00',
-                //     patientName:'Jack',
-                //     recordsName: 'Tom',
-                //     sex: '男',
-                //     address: 'No. 189, Grove St, Los Angeles',
-                // },
-            ]
+            patientQueue: [],
+            pagination: {
+                current: 1, //当前页
+                total: 0, //记录条数
+                size: 6, //每页条数
+            },
         }
     },
-    created(){
-        this.$axios.get("/patientQueue/getByDoctorId/"+this.doctorId).then(response => {
-            this.patientQueue = response.data.data
-        }).catch(error => {})
+    created() {
+        this.getPatientQueue()
     },
     methods: {
-
+        getPatientQueue() {
+            this.$axios.get("/patientQueue/getByDoctorId/" + this.doctorId).then(response => {
+                this.patientQueue = response.data.data
+                this.pagination.total = response.data.data.length
+            }).catch(error => { })
+        },
+        //改变当前记录条数
+        handleSizeChange(val) {
+            this.pagination.size = val;
+            this.getPatientQueue()
+        },
+        //改变当前页码，重新发送请求
+        handleCurrentChange(val) {
+            this.pagination.current = val;
+            this.getPatientQueue()
+        },
     }
 }
 </script>

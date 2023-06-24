@@ -68,7 +68,9 @@ export default {
   },
 
   created() {
-    this.getMedicalRecords()
+    if (this.$store.state.isLogin) {  // 登录才执行
+      this.getMedicalRecords()
+    }
   },
 
 }

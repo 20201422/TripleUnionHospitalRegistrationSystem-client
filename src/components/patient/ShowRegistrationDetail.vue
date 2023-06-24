@@ -60,7 +60,8 @@
         </template>
       </el-dialog>
       <el-dialog v-model="innerVisibleCancel" width="30%" center>
-        <el-result icon="warning" title="确定要取消挂号吗？医事服务费会在24小时内退回原账户" />
+        <el-result icon="warning" :title="this.registration.registrationState === '成功' ? '确定要取消挂号吗？医事服务费会在24小时内退回原账户'
+        : '确定要取消挂号吗？'" />
         <template #footer>
           <el-button type="primary" @click="cancel">确定</el-button>
         </template>
@@ -74,7 +75,7 @@
                    @click="innerVisibleCancel = true">取消挂号</el-button>
         <el-button v-if="(this.registration.registrationState === '待支付'
         || this.registration.registrationState === '成功') && exitTime()" type="danger"
-                   @click="innerVisibleExit">退号</el-button>
+                   @click="innerVisibleExit = true">退号</el-button>
         <el-button v-if="this.registration.registrationState === '待支付'" type="primary" @click="pay">支付</el-button>
       </span>
     </template>
@@ -141,10 +142,9 @@ export default {
         case '待支付':
           return '';
         case '未支付':
+          return 'danger';
         case '退号':
           return 'warning';
-        case '失败':
-          return 'danger';
         default:
           return '';
       }
@@ -161,9 +161,13 @@ export default {
         totalAmount: this.registration.numberSourceFee
       }
       this.$axios.post("alipay/pay", alipay).then(resp => {
-        this.innerVisible = true
-        const newWindow = window.open('', '_blank');
-        newWindow.document.write(resp.data.data);
+        if (resp.data.data === '0') { // 超时未支付
+          location.reload()
+        } else {
+          this.innerVisible = true
+          const newWindow = window.open('', '_blank');
+          newWindow.document.write(resp.data.data);
+        }
       }).catch(error => {
         console.log(error); // 处理错误信息
       });
@@ -208,7 +212,7 @@ export default {
 
           location.reload()
           ElMessage({
-            message: '取消成功，医事服务费将在24小时内原路返回',
+            message: '取消成功',
             type: 'success',
           })
 
@@ -238,7 +242,7 @@ export default {
 
       const currentDateTime = new Date();// 获取当前日期和时间
       const registrationDateTime = new Date(this.registration.numberSourceDate);// 将字符串日期转换为Date对象
-      const isTomorrow = registrationDateTime.getDate() < currentDateTime.getDate() + 1;// 判断日期是否是明天
+      const isTomorrow = registrationDateTime.getDate() <= currentDateTime.getDate() + 1;// 判断日期是否是明天
       const isAfter3PM = currentDateTime.getHours() >= 14;// 判断当前时间是否在14:00之后
 
       return isTomorrow && isAfter3PM;

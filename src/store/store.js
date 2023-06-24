@@ -10,6 +10,7 @@ const store = new Vuex.Store({
         userName: null,  // 用户名称
         userPhoneNumber: null,  // 用户电话号码
         userEmail: null, // 用户邮箱
+        userType: null, // 用户类型
         isLogin: false,  // 登录状态
         token: '',    // 用户登录成功后持有的token
     },

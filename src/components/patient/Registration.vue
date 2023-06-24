@@ -189,11 +189,16 @@ export default {
                 message: '未支付的号源超过三次，今日不可线上预约',
                 type: 'warning',
               })
+            } else if (resp.data.data === -4) {
+              ElMessage({
+                message: '您已预约该号，请勿重复预约',
+                type: 'warning',
+              })
             } else {
               this.$router.push("/Patient/MyRegistration")
 
               ElMessage({
-                message: '预约成功，请在十分钟内完成支付',
+                message: '预约成功，请在10分钟内完成支付',
                 type: 'success',
               })
             }

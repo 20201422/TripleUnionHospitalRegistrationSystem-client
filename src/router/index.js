@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Login from "@/views/LoginView.vue"
 import Register from "@/views/RegisterView.vue";
 import Main from "@/views/MainView.vue"
+import User from "@/views/UserView.vue";
 import Department from "@/views/DepartmentView.vue"
 import Registration from "@/views/RegistrationView.vue";
 import MyRegistration from "@/views/MyRegistrationView.vue"
@@ -38,8 +39,13 @@ const routes = [
     },
     {
         path: '/Main',
-        name: 'main',
+        name: 'Main',
         component: Main,
+    },
+    {
+        path: '/User',
+        name: 'User',
+        component: User,
     },
     {
         path: '/Patient/Department',

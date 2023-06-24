@@ -9,7 +9,7 @@
                     <router-link to='/doctorMain/personalInformation' class="navs">个人信息</router-link>
                 </el-menu-item>
                 <el-menu-item index="2">
-                    <router-link to='/doctorMain/patientQueue' class="navs">就诊人队列</router-link>
+                    <router-link to='/doctorMain/patientQueue' class="navs">我的预约</router-link>
                 </el-menu-item>
                 <el-menu-item index="3">
                     <router-link to='/doctorMain/myArrangement' class="navs">我的排班</router-link>
