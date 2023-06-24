@@ -19,7 +19,8 @@
                     <label>上午</label>
                     <div v-for="info in arrangementInfo">
                         <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
-                            <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
+                            <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag"
+                            @click="openArrangmentInfo(info)">
                                 {{ info.consultingRoomName }}<br><br>
                                 {{ info.number }}
                             </el-tag>
@@ -31,7 +32,8 @@
                     <label>下午</label>
                     <div v-for="info in arrangementInfo">
                         <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
-                            <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
+                            <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag"
+                            @click="openArrangmentInfo(info)">
                                 {{ info.consultingRoomName }}<br><br>
                                 {{ info.number }}
                             </el-tag>
@@ -41,6 +43,29 @@
             </div>
         </div>
     </div>
+    <el-dialog v-model="detailVisible" style="min-height: 300px;" width="50%" title="排班详情" append-to-body draggable="true">
+        <el-text size="large">{{ this.selectedArrangementInfo.numberSourceDate }}</el-text>&nbsp;&nbsp;
+        <el-text size="large">{{ this.selectedArrangementInfo.amOrPm }}</el-text><br><br>
+        <el-text size="large">医生：{{ this.selectedArrangementInfo.doctorName }}</el-text>&nbsp;&nbsp;
+        <el-text size="large">诊室：{{ this.selectedArrangementInfo.consultingRoomName }}</el-text><br><br>
+        <el-text size="large">号源数量</el-text><br>
+        <div v-if="selectedArrangementInfo.amOrPm == '上午'">
+            <el-text size="large">&nbsp; 8:00 ~ &nbsp; 8:30 &nbsp; {{ selectedDoctorInfoNum[0] }}</el-text><br>
+            <el-text size="large">&nbsp; 8:30 ~ &nbsp; 9:00 &nbsp; {{ selectedDoctorInfoNum[1] }}</el-text><br>
+            <el-text size="large">&nbsp; 9:00 ~ &nbsp; 9:30 &nbsp; {{ selectedDoctorInfoNum[2] }}</el-text><br>
+            <el-text size="large">&nbsp; 9:30 ~ 10:00 &nbsp; {{ selectedDoctorInfoNum[3] }}</el-text><br>
+            <el-text size="large">10:00 ~ 10:30 &nbsp; {{ selectedDoctorInfoNum[4] }}</el-text><br>
+            <el-text size="large">10:30 ~ 11:00 &nbsp; {{ selectedDoctorInfoNum[5] }}</el-text><br>
+        </div>
+        <div v-if="selectedArrangementInfo.amOrPm == '下午'">
+            <el-text size="large"> 14:00 ~ 14:30 &nbsp; {{ selectedDoctorInfoNum[0] }}</el-text><br>
+            <el-text size="large"> 14:30 ~ 15:00 &nbsp; {{ selectedDoctorInfoNum[1] }}</el-text><br>
+            <el-text size="large"> 15:00 ~ 15:30 &nbsp; {{ selectedDoctorInfoNum[2] }}</el-text><br>
+            <el-text size="large"> 15:30 ~ 16:00 &nbsp; {{ selectedDoctorInfoNum[3] }}</el-text><br>
+            <el-text size="large"> 16:00 ~ 16:30 &nbsp; {{ selectedDoctorInfoNum[4] }}</el-text><br>
+            <el-text size="large"> 16:30 ~ 17:00 &nbsp; {{ selectedDoctorInfoNum[5] }}</el-text><br>
+        </div>
+    </el-dialog>
 </template>
 
 <script>
@@ -52,6 +77,9 @@ export default {
             today: '',
             dateKey: 0,  //用于界面刷新
             arrangementInfo: [],
+            detailVisible:false, 
+            selectedArrangementInfo:[],
+            selectedDoctorInfoNum:[],
         }
     },
     beforeMount() {
@@ -170,7 +198,21 @@ export default {
             ]
             this.dateKey++
         },
-
+        openArrangmentInfo(info) {
+            this.selectedArrangementInfo = info;
+            this.detailVisible = true;
+            var count = info.number  //总号源数
+            var cores = 6    //时间段数量
+            for (var idx = 0; idx < cores; idx++) {
+                var min = parseInt(count * idx / cores);
+                var max = parseInt(count * (idx + 1) / cores);
+                var averageNum = 0
+                for (var i = min; i < max; i++) {
+                    averageNum++
+                }
+                this.selectedDoctorInfoNum[idx] = averageNum
+            }
+        },
 
     }
 }
@@ -216,8 +258,8 @@ label {
 }
 
 .arrangementTag {
-    width: 95%;
-    min-height: 180px;
+    width: 94%;
+    min-height: 185px;
     margin-bottom: 3px;
     cursor: pointer;
     font-size: small;
