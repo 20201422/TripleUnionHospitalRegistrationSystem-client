@@ -57,6 +57,8 @@ request.interceptors.response.use(
             } else if (status === 404) {
                 // 请求的资源不存在
                 ElMessage.error('请求的资源不存在')
+            } else if (status === 400) {
+                ElMessage.error("请求出错")
             } else {
                 // 其他错误状态码的处理逻辑
                 // ...
