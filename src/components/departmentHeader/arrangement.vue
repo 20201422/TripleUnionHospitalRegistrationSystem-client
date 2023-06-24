@@ -250,11 +250,14 @@ export default {
             // for (let i = 7; i < 14; i++) {  //后14天
             //     this.time.push(this.getAfterDate(i, nowTime))
             // }
-            for (let i = 0; i < 14; i++) {  //后14天
+            for (let i = 7; i < 21; i++) {  //后14天
                 this.time.push(this.getAfterDate(i, nowTime))
             }
-            for (let i = 14; i > 0; i--) {  //前14天
+            for (let i = 7; i > 0; i--) {  //前7天
                 this.beforeTime.push(this.getBeforeDate(i, nowTime))
+            }
+            for (let i = 0; i < 7; i++) {  //后七天
+                this.beforeTime.push(this.getAfterDate(i, nowTime))
             }
             this.date = [
                 { time: this.time[0], week: this.week[0] },
