@@ -2,11 +2,11 @@
     <div class="row" style="margin-top: 30px;">
         <div class="col-8">
             <div class="frame">
-                <el-button>排班记录</el-button>
+                <el-button @click="recordsVisible = true">排班记录</el-button>
                 <div style="margin-bottom: 10px ;clear: both;">
 
                 </div>
-                <el-scrollbar height = "520px">
+                <el-scrollbar height="520px">
                     <div class="scrollbar-flex-content">
                         <div v-for="dateInfo in date" class="arrangementtable">
                             <div id="oneDay" class="oneday">
@@ -122,6 +122,54 @@
             <el-text size="large">16:30~17:00 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
         </div>
     </el-dialog>
+
+    <el-dialog v-model="recordsVisible" style="min-height: 300px;" width="70%" title="排班记录" append-to-body draggable="true">
+        <el-scrollbar height="520px">
+            <div class="scrollbar-flex-content">
+                <div v-for="dateInfo in beforeDate" class="arrangementtable">
+                    <div id="oneDay" class="oneday">
+                        <div id='date'>
+                            <label>{{ dateInfo.time }}</label>
+                            <label>{{ dateInfo.week }}</label>
+                        </div>
+
+                        <div id='am' class="halfday">
+                            <label>上午</label>
+
+                            <div v-for="info in arrangementInfo" :key="arrangementKey">
+                                <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
+                                    <el-popconfirm confirm-button-text="查看" cancel-button-text="删除" title="请选择"
+                                        @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
+                                        <template #reference>
+                                            <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
+                                                {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                            </el-tag>
+                                        </template>
+                                    </el-popconfirm>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id='pm' class="halfday">
+                            <label>下午</label>
+                            <div v-for="info in arrangementInfo">
+                                <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
+                                    <el-popconfirm confirm-button-text="查看" cancel-button-text="删除" title="请选择"
+                                        @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
+                                        <template #reference>
+                                            <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
+                                                {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                            </el-tag>
+                                        </template>
+                                    </el-popconfirm>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </el-scrollbar>
+    </el-dialog>
 </template>
 
 <script>
@@ -138,9 +186,13 @@ export default {
             time: [],
             week: [],
             date: [],
+            beforeTime: [],
+            beforeWeek: [],
+            beforeDate: [],
             arrangementInfo: [],
             addVisible: false,
             detailVisible: false,
+            recordsVisible:false,
             selectedDate: '',
             selectedAmOrPm: '',
             selectedDoctor: '',
@@ -198,12 +250,12 @@ export default {
             // for (let i = 7; i < 14; i++) {  //后14天
             //     this.time.push(this.getAfterDate(i, nowTime))
             // }
-            for (let i = 0; i < 14; i++) {  //后7天
+            for (let i = 0; i < 14; i++) {  //后14天
                 this.time.push(this.getAfterDate(i, nowTime))
             }
-            // for (let i = 7; i >0 ; i--) {  //前七天
-            //     this.time.push(this.getBeforeDate(i, nowTime))
-            // }
+            for (let i = 14; i > 0; i--) {  //前14天
+                this.beforeTime.push(this.getBeforeDate(i, nowTime))
+            }
             this.date = [
                 { time: this.time[0], week: this.week[0] },
                 { time: this.time[1], week: this.week[1] },
@@ -219,6 +271,22 @@ export default {
                 { time: this.time[11], week: this.week[11] },
                 { time: this.time[12], week: this.week[12] },
                 { time: this.time[13], week: this.week[13] },
+            ]
+            this.beforeDate = [
+                { time: this.beforeTime[0], week: this.week[14] },
+                { time: this.beforeTime[1], week: this.week[15] },
+                { time: this.beforeTime[2], week: this.week[16] },
+                { time: this.beforeTime[3], week: this.week[17] },
+                { time: this.beforeTime[4], week: this.week[18] },
+                { time: this.beforeTime[5], week: this.week[19] },
+                { time: this.beforeTime[6], week: this.week[20] },
+                { time: this.beforeTime[7], week: this.week[21] },
+                { time: this.beforeTime[8], week: this.week[22] },
+                { time: this.beforeTime[9], week: this.week[23] },
+                { time: this.beforeTime[10], week: this.week[24] },
+                { time: this.beforeTime[11], week: this.week[25] },
+                { time: this.beforeTime[12], week: this.week[26] },
+                { time: this.beforeTime[13], week: this.week[27] },
             ]
         },
         getAfterDate(num, time) {
@@ -477,9 +545,11 @@ export default {
     margin-left: 5%;
     margin-top: 5%;
 }
+
 .scrollbar-flex-content {
-  display: flex;
+    display: flex;
 }
+
 .arrangementtable {
     /* float: left; */
     /* display: flex; */
