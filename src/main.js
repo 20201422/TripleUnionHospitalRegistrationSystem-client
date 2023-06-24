@@ -28,6 +28,12 @@ const app = createApp(App)
 app.config.globalProperties.$axios = axios
 app.config.globalProperties.$echarts = echarts
 
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component)
+}
+
 //element-plus 报错 ResizeObserver loop limit exceeded 解决
 const debounce = (fn, delay) => {
     let timer = null;

@@ -1,58 +1,205 @@
 <template>
-  <el-table class="table" :data="pagination.records" border>
-    <el-table-column prop="departmentName" label="科室名称" width="180" algin="center" />
-    <el-table-column prop="timeFrameBeginTime" label="时段开始时间" width="180" algin="center" />
-    <el-table-column prop="timeFrameEndTime" label="时段结束时间" width="180" algin="center" />
-    <el-table-column prop="consultingRoom" label="门诊类型" width="180" algin="center" />
-    <el-table-column prop="numberSourceNumber" label="号源数量" width="180" algin="center" />
-  </el-table>
-  <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-      :current-page="pagination.current" :page-sizes="[6, 10]" :page-size="pagination.size"
-      layout="total, sizes, prev, pager, next, jumper" :total="pagination.total" class="page">
-    </el-pagination>
+  <div class="main"></div>
+  <div class="st-part">
+    <el-select class="el-st" placeholder="选择科室" @change="getBusiness" v-model="dept" clearable>
+      <el-option v-for="option in deptList" :value="option">
+        {{ option }}
+      </el-option>
+    </el-select>
+    <el-select class="el-st" placeholder="选择开始时段" @change="getBusiness" v-model="begin" clearable>
+      <el-option v-for="option in beginList" :value="option">
+        {{ option }}
+      </el-option>
+    </el-select>
+    <el-select class="el-st" placeholder="选择结束时段" @change="getBusiness" v-model="end" clearable>
+      <el-option v-for="option in endList" :value="option">
+        {{ option }}
+      </el-option>
+    </el-select>
+    <el-select class="el-st" placeholder="门诊类型" @change="getBusiness" v-model="type" clearable>
+      <el-option v-for="option in typeList" :value="option">
+        {{ option }}
+      </el-option>
+    </el-select>
+    <el-button class="el-btn" type="primary" @click="addBusiness">
+      <el-icon>
+        <Plus />
+      </el-icon>添加
+    </el-button>
+  </div>
+  <div class="row">
+    <div class=col-6.5>
+      <el-table class="table" :data="pagination.records" border>
+        <el-table-column prop="departmentName" label="科室名称" width="180" algin="center" />
+        <el-table-column prop="timeFrameBeginTime" label="时段开始时间" width="180" algin="center" />
+        <el-table-column prop="timeFrameEndTime" label="时段结束时间" width="180" algin="center" />
+        <el-table-column prop="consultingRoom" label="门诊类型" width="180" algin="center" />
+        <el-table-column prop="numberSourceNumber" label="号源数量" width="180" algin="center" />
+      </el-table>
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+        :current-page="pagination.current" :page-sizes="[6, 10]" :page-size="pagination.size"
+        layout="total, sizes, prev, pager, next, jumper" :total="pagination.total" class="page">
+      </el-pagination>
+
+      <el-dialog v-model="Visible" style="min-height: 300px;" width="50%" title="添加业务" append-to-body draggable="true">
+        <el-text style="margin-left: 200px;">科室名称：</el-text>
+        <el-select v-model="deptname" clearable placeholder="选择科室">
+          <el-option v-for="deptn in deptnameList" :key = "deptn.departmentId" :value="deptn.departmentId" :label="deptn.departmentName"/>
+        </el-select>
+        <br><br>
+        <el-text style="margin-left: 200px;">门诊类型：</el-text>
+        <el-select v-model="roomtype" clearable placeholder="门诊类型">
+          <el-option v-for="room in rooms" :value = "room"/>
+        </el-select>
+        <br><br>
+        <el-text style="margin-left: 200px;">号源数量：</el-text>
+        <el-select v-model="num" clearable placeholder="设置号源数量">
+          <el-option v-for="option in nums" :value = "option" />
+        </el-select>
+
+        <div style="margin-left: 81%;margin-top: 10px;">
+          <el-button type="primary" @click="sumbit">确认</el-button>
+          <el-button @click="cancel">取消</el-button>
+        </div>
+      </el-dialog>
+    </div>
+  </div>
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        pagination: {
-          current: 1, //当前页
-          total: 0, //记录条数
-          size: 6, //每页条数
-        },
-      };
+export default {
+  data() {
+    return {
+      pagination: {
+        current: 1, //当前页
+        total: 0, //记录条数
+        size: 6, //每页条数
+      },
+      dept: "", //科室名称
+      begin: "", //开始时间
+      end: "", //结束时间
+      type: "", //门诊类型
+      deptList: [],
+      beginList: [],
+      endList: [],
+      typeList: [],
+      Visible: false,
+      deptname:"",
+      deptnameList: [],
+      roomtype:"",
+      rooms:['普通门诊','专家门诊','特需门诊'],
+      num:0,
+      nums:[120,300,480,600]
+    };
+  },
+  created() {
+    this.getBusinessInfo()
+    this.init()
+    this.initDepartment()
+  },
+  methods: {
+    getBusinessInfo() {
+      //分页查询所有业务信息
+      this.$axios(`/business/${this.pagination.current}/${this.pagination.size}`).then(res => {
+        this.pagination = res.data.data;
+        this.total = res.data.total;
+      }).catch(error => {
+        this.$message = error.message;
+      });
     },
-    created() {
+    //改变当前记录条数
+    handleSizeChange(val) {
+      this.pagination.size = val;
       this.getBusinessInfo();
     },
-    methods: {
-      getBusinessInfo() {
-        //分页查询所有业务信息
-        this.$axios(`/business/${this.pagination.current}/${this.pagination.size}`).then(res => {
-          this.pagination = res.data.data;
-          this.total = res.data.total;
-        }).catch(error => {
+    //改变当前页码，重新发送请求
+    handleCurrentChange(val) {
+      this.pagination.current = val;
+      this.getBusinessInfo();
+    },
+
+    init() {
+      this.$axios.post('/businessList').then(res => {
+        let datas = res.data.data
+        datas.forEach(data => {
+          if (!this.deptList.includes(data.departmentName)) {
+            this.deptList.push(data.departmentName)
+          }
+          if (!this.beginList.includes(data.timeFrameBeginTime)) {
+            this.beginList.push(data.timeFrameBeginTime)
+          }
+
+          if (!this.endList.includes(data.timeFrameEndTime)) {
+            this.endList.push(data.timeFrameEndTime)
+          }
+
+          if (!this.typeList.includes(data.consultingRoom)) {
+            this.typeList.push(data.consultingRoom)
+          }
+        })
+      })
+        .catch(error => {
           this.$message = error.message;
-        });
-      },
-      //改变当前记录条数
-      handleSizeChange(val) {
-        this.pagination.size = val;
+        })
+    },
+
+    initDepartment(){
+      this.$axios.post('/department/departmentList').then(res => {
+        this.deptnameList = res.data.data
+      })
+    
+    },
+
+    addBusiness() {
+      this.Visible = true
+    },
+
+    getBusiness() {
+      this.$axios.get('/businessPart', {
+        params: {
+          page: 1,
+          size: 6,
+          departmentName: this.dept,
+          timeFrameBeginTime: this.begin,
+          timeFrameEndTime: this.end,
+          consultingRoom: this.type
+        }
+      }).then(res => {
+        this.pagination = res.data.data
+        this.total = res.data.total
+        this.pagination.current = 1
+      }).catch(error => {
+        this.$message = error.message;
+      })
+    },
+
+    sumbit(){
+      this.$axios.get('/addBusiness', {
+        params: {
+          departmentId:this.deptname,
+          consultingRoomType:this.roomtype,
+          numberSourceNumber:this.num
+        }
+      }).then(res => {
+        this.cancel();
         this.getBusinessInfo();
-      },
-      //改变当前页码，重新发送请求
-      handleCurrentChange(val) {
-        this.pagination.current = val;
-        this.getBusinessInfo();
-      },
-    }
-  };
+        this.init();
+        this.initDepartment();
+      }).catch(error => {
+        this.$message = error.message;
+      })
+    },
+    
+    cancel() {
+      this.Visible = false
+    },
+  }
+};
 </script>
 <style>
 .table {
   width: 100%;
-  margin-top: 90px;
+  margin-top: 20px;
   margin-left: 10%;
 }
 
@@ -64,9 +211,18 @@
   margin-bottom: 16px;
 }
 
+.main {
+  margin-top: 100px;
+}
+
+.st-part {
+  margin-top: 100px;
+  margin-left: 45px;
+}
+
 .page {
   margin-top: 20px;
-  margin-left: 27%;
+  margin-left: 23%;
   display: flex;
   align-items: center;
 }

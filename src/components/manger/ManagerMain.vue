@@ -11,8 +11,7 @@
         </el-sub-menu>
         <el-sub-menu index="2">
           <template #title>黑名单管理</template>
-          <el-menu-item index="2-1">item one</el-menu-item>
-          <el-menu-item index="2-2">item two</el-menu-item>
+          <el-menu-item index="2-1">查看黑名单</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="3">
           <template #title>号源管理</template>
@@ -30,7 +29,7 @@
         </el-sub-menu>
       </el-menu>
     </div>
-    <div class="col-6.5">
+    <div class="col-10">
       <div>
         <router-view></router-view>
       </div>
