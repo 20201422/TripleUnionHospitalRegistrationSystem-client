@@ -75,7 +75,7 @@
                    @click="innerVisibleCancel = true">取消挂号</el-button>
         <el-button v-if="(this.registration.registrationState === '待支付'
         || this.registration.registrationState === '成功') && exitTime()" type="danger"
-                   @click="innerVisibleExit">退号</el-button>
+                   @click="innerVisibleExit = true">退号</el-button>
         <el-button v-if="this.registration.registrationState === '待支付'" type="primary" @click="pay">支付</el-button>
       </span>
     </template>

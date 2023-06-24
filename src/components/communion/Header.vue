@@ -17,7 +17,8 @@
             <el-dropdown-item command="a">我要挂号</el-dropdown-item>
             <el-dropdown-item command="b">查看挂号单</el-dropdown-item>
             <el-dropdown-item command="c">管理就诊档案</el-dropdown-item>
-            <el-dropdown-item disabled divided v-if="!this.isLogin()">{{this.name}}</el-dropdown-item>
+            <el-dropdown-item command="e" :disabled="this.$store.state.userType !== '就诊人'"
+                              divided v-if="!this.isLogin()">{{this.name}}</el-dropdown-item>
             <el-dropdown-item command="d" divided>
               <template v-if="isLoggedIn">
                 退出登录
@@ -98,12 +99,15 @@ export default {
         } else {  // 退出登录
           // console.log(this.$route.name)
           this.$store.dispatch("setUser", null)
-          if (this.$route.name === 'main') {
+          // console.log(this.$route.name)
+          if (this.$route.name === 'Main') {
             location.reload()
           } else {
             this.$router.replace("/")
           }
         }
+      } else if (command === 'e') {
+        this.$router.push("/User")
       }
     },
 
