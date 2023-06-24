@@ -193,7 +193,7 @@ export default {
               this.$router.push("/Patient/MyRegistration")
 
               ElMessage({
-                message: '预约成功，请在十分钟内完成支付',
+                message: '预约成功，请在10分钟内完成支付',
                 type: 'success',
               })
             }
