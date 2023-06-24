@@ -6,6 +6,7 @@ export const user = (state, user) => {
         state.userName = JSON.parse(user).userName;
         state.userPhoneNumber = JSON.parse(user).userPhoneNumber;
         state.userEmail = JSON.parse(user).userEmail;
+        state.userType = JSON.parse(user).userType;
         state.isLogin = true;
     }else if (user == null){
         //登出时清空sessionStorage里面的参数

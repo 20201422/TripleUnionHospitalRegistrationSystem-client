@@ -16,7 +16,7 @@
         {{ option }}
       </el-option>
     </el-select>
-    <el-select class="el-st" placeholder="门诊类型" @change="getBusiness" v-model="type" clearable>
+    <el-select class="el-st" placeholder="选择门诊类型" @change="getBusiness" v-model="type" clearable>
       <el-option v-for="option in typeList" :value="option">
         {{ option }}
       </el-option>
@@ -43,22 +43,23 @@
 
       <el-dialog v-model="Visible" style="min-height: 300px;" width="50%" title="添加业务" append-to-body draggable="true">
         <el-text style="margin-left: 200px;">科室名称：</el-text>
-        <el-select v-model="deptname" clearable placeholder="选择科室">
-          <el-option v-for="deptn in deptnameList" :key = "deptn.departmentId" :value="deptn.departmentId" :label="deptn.departmentName"/>
+        <el-select @change="handleChange" v-model="deptname" clearable placeholder="选择科室">
+          <el-option v-for="deptn in deptnameList" :key="deptn.departmentId" :value="deptn.departmentId"
+            :label="deptn.departmentName" />
         </el-select>
         <br><br>
         <el-text style="margin-left: 200px;">门诊类型：</el-text>
-        <el-select v-model="roomtype" clearable placeholder="门诊类型">
-          <el-option v-for="room in rooms" :value = "room"/>
+        <el-select @change="handleChange" v-model="roomtype" clearable placeholder="门诊类型">
+          <el-option v-for="room in rooms" :value="room" />
         </el-select>
         <br><br>
         <el-text style="margin-left: 200px;">号源数量：</el-text>
-        <el-select v-model="num" clearable placeholder="设置号源数量">
-          <el-option v-for="option in nums" :value = "option" />
+        <el-select @change="handleChange" v-model="num" clearable placeholder="设置号源数量">
+          <el-option v-for="option in nums" :value="option" />
         </el-select>
 
         <div style="margin-left: 81%;margin-top: 10px;">
-          <el-button type="primary" @click="sumbit">确认</el-button>
+          <el-button type="primary" @click="sumbit" :disabled="disabled">确认</el-button>
           <el-button @click="cancel">取消</el-button>
         </div>
       </el-dialog>
@@ -84,39 +85,21 @@ export default {
       endList: [],
       typeList: [],
       Visible: false,
-      deptname:"",
+      deptname: "",
       deptnameList: [],
-      roomtype:"",
-      rooms:['普通门诊','专家门诊','特需门诊'],
-      num:0,
-      nums:[120,300,480,600]
+      roomtype: "",
+      rooms: ['普通门诊', '专家门诊', '特需门诊'],
+      num: 0,
+      nums: [120, 300, 480, 600],
+      disabled: true,
     };
   },
   created() {
-    this.getBusinessInfo()
+    this.getBusiness()
     this.init()
     this.initDepartment()
   },
   methods: {
-    getBusinessInfo() {
-      //分页查询所有业务信息
-      this.$axios(`/business/${this.pagination.current}/${this.pagination.size}`).then(res => {
-        this.pagination = res.data.data;
-        this.total = res.data.total;
-      }).catch(error => {
-        this.$message = error.message;
-      });
-    },
-    //改变当前记录条数
-    handleSizeChange(val) {
-      this.pagination.size = val;
-      this.getBusinessInfo();
-    },
-    //改变当前页码，重新发送请求
-    handleCurrentChange(val) {
-      this.pagination.current = val;
-      this.getBusinessInfo();
-    },
 
     init() {
       this.$axios.post('/businessList').then(res => {
@@ -143,11 +126,11 @@ export default {
         })
     },
 
-    initDepartment(){
+    initDepartment() {
       this.$axios.post('/department/departmentList').then(res => {
         this.deptnameList = res.data.data
       })
-    
+
     },
 
     addBusiness() {
@@ -155,10 +138,11 @@ export default {
     },
 
     getBusiness() {
+      //分页查询业务信息
       this.$axios.get('/businessPart', {
         params: {
-          page: 1,
-          size: 6,
+          page: this.pagination.current,
+          size: this.pagination.size,
           departmentName: this.dept,
           timeFrameBeginTime: this.begin,
           timeFrameEndTime: this.end,
@@ -167,29 +151,49 @@ export default {
       }).then(res => {
         this.pagination = res.data.data
         this.total = res.data.total
-        this.pagination.current = 1
       }).catch(error => {
         this.$message = error.message;
       })
     },
 
-    sumbit(){
+    //改变当前记录条数
+    handleSizeChange(val) {
+      this.pagination.size = val;
+      this.getBusiness();
+    },
+
+    //改变当前页码，重新发送请求
+    handleCurrentChange(val) {
+      this.pagination.current = val;
+      this.getBusiness();
+    },
+
+    handleChange() {
+      if ((this.deptname.length === 0 || this.deptname === "") || (this.roomtype.length === 0 || this.roomtype === "") || (this.num === 0)) {
+        this.disabled = true
+      }
+      else {
+        this.disabled = false
+      }
+    },
+
+    sumbit() {
       this.$axios.get('/addBusiness', {
         params: {
-          departmentId:this.deptname,
-          consultingRoomType:this.roomtype,
-          numberSourceNumber:this.num
+          departmentId: this.deptname,
+          consultingRoomType: this.roomtype,
+          numberSourceNumber: this.num
         }
       }).then(res => {
-        this.cancel();
-        this.getBusinessInfo();
+        this.cancel()
+        this.getBusiness();
         this.init();
         this.initDepartment();
       }).catch(error => {
         this.$message = error.message;
       })
     },
-    
+
     cancel() {
       this.Visible = false
     },
@@ -199,24 +203,24 @@ export default {
 <style>
 .table {
   width: 100%;
-  margin-top: 20px;
+  margin-top: 10px;
   margin-left: 10%;
 }
 
 .example-pagination-block+.example-pagination-block {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .example-pagination-block .example-demonstration {
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .main {
-  margin-top: 100px;
+  margin-top: 10px;
 }
 
 .st-part {
-  margin-top: 100px;
+  margin-top: 60px;
   margin-left: 45px;
 }
 

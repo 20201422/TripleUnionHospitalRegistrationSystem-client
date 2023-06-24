@@ -54,6 +54,7 @@ export default {
         userName: '',
         userPhoneNumber: '',
         userEmail: '',
+        userType: '',
       },
 
       loading: ref(false) // 加载动画
@@ -87,12 +88,14 @@ export default {
             this.user.userName = data.userName
             this.user.userEmail = data.userEmail
             this.user.userPhoneNumber = data.userPhoneNumber
+            this.user.userType = data.userType
+
             //将用户名放入sessionStorage中
             sessionStorage.setItem("user", JSON.stringify(this.user));
-            sessionStorage.setItem("userToken", data.patientName)
+            sessionStorage.setItem("userToken", data.userName)
             //将用户名放入vuex中
             this.$store.dispatch("setUser", JSON.stringify(this.user));
-            this.$store.dispatch("setToken", data.patientPassword);
+            this.$store.dispatch("setToken", data.userId);
 
             if (data.userType ==='就诊人') {
               this.$router.go(-1)
