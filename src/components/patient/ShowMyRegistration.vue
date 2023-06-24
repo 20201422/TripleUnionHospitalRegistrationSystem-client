@@ -121,7 +121,9 @@ export default {
   },
 
   created() {
-    this.getMyRegistration()
+    if (this.$store.state.isLogin) {  // 登录才执行
+      this.getMyRegistration()
+    }
   },
 
 }

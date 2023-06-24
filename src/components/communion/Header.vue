@@ -96,8 +96,13 @@ export default {
         if (this.isLogin()) {
           this.$router.push("/Login")
         } else {  // 退出登录
-          this.$store.dispatch("setUser", null);
-          this.$router.replace('/');
+          // console.log(this.$route.name)
+          this.$store.dispatch("setUser", null)
+          if (this.$route.name === 'main') {
+            location.reload()
+          } else {
+            this.$router.replace("/")
+          }
         }
       }
     },
