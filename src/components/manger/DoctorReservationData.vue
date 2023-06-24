@@ -1,73 +1,215 @@
 <template>
-  <el-table class="table" :data="pagination.records" border>
-    <el-table-column prop="departmentName" label="科室名称" width="180" algin="center" />
-    <el-table-column prop="timeFrameBeginTime" label="时段开始时间" width="180" algin="center" />
-    <el-table-column prop="timeFrameEndTime" label="时段结束时间" width="180" algin="center" />
-    <el-table-column prop="consultingRoom" label="门诊类型" width="180" algin="center" />
-    <el-table-column prop="numberSourceNumber" label="号源数量" width="180" algin="center" />
-  </el-table>
-  <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-      :current-page="pagination.current" :page-sizes="[6, 10]" :page-size="pagination.size"
-      layout="total, sizes, prev, pager, next, jumper" :total="pagination.total" class="page">
-    </el-pagination>
+  <div class="main"></div>
+  <el-select class="el-st" @change="getData(dept, week, doctorName)" v-model="week" clearable>
+    <el-option v-for="option in weekList" :value="option">
+      {{ option }}
+    </el-option>
+  </el-select>
+  <el-select class="el-st" @change="getData(dept, week, doctorName)" v-model="dept" clearable>
+    <el-option v-for="option in deptList" :value="option">
+      {{ option }}
+    </el-option>
+  </el-select>
+  <el-select class="el-st" @change="getData(dept, week, doctorName)" v-model="doctorName" clearable>
+    <el-option v-for="option in dctList" :value="option">
+      {{ option }}
+    </el-option>
+  </el-select>
+  <el-button class = "el-btn" type="primary" @click="exportData">
+    <el-icon class="el-icon--left"><Download /></el-icon>DownLoad
+  </el-button>
+  <div class = "row">
+    <div class = "col-5">
+      <div class="pie" ref="pie"></div>
+    </div>
+    <div class = "col-5">
+      <div class="box" ref="box"></div>
+    </div>
+  </div>
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        pagination: {
-          current: 1, //当前页
-          total: 0, //记录条数
-          size: 6, //每页条数
-        },
-      };
-    },
-    created() {
-      this.getBusinessInfo();
-    },
-    methods: {
-      getBusinessInfo() {
-        //分页查询所有业务信息
-        this.$axios(`/business/${this.pagination.current}/${this.pagination.size}`).then(res => {
-          this.pagination = res.data.data;
-          this.total = res.data.total;
-        }).catch(error => {
-          this.$message = error.message;
-        });
-      },
-      //改变当前记录条数
-      handleSizeChange(val) {
-        this.pagination.size = val;
-        this.getBusinessInfo();
-      },
-      //改变当前页码，重新发送请求
-      handleCurrentChange(val) {
-        this.pagination.current = val;
-        this.getBusinessInfo();
-      },
+import axios from "axios"
+export default {
+  data() {
+    return {
+      week: "本周",
+      deptList: [],
+      dctList:[],
+      doctorName:"",
+      dept: "",
+      weekList: [],
+      count: [0, 0, 0, 0, 0, 0, 0]
     }
-  };
+  },
+
+  created() {
+    this.init()
+    setTimeout(() => {
+      this.getCharts1(this.count)
+      this.getCharts2(this.count)
+    }, 1000)
+  },
+
+  methods: {
+    init() {
+      this.$axios.post('/doctorRegistrationData').then(res => {
+        let datas = res.data.data;
+        datas.forEach(data => {
+          if (!this.deptList.includes(data.departmentName)) {
+            this.deptList.push(data.departmentName)
+          }
+          if (!this.weekList.includes(data.weekType)) {
+            this.weekList.push(data.weekType)
+          }
+          if(!this.dctList.includes(data.doctorName)){
+            this.dctList.push(data.doctorName)
+          }
+          this.dept = this.deptList[0]
+          this.doctorName = this.dctList[0]
+          if (data.departmentName === this.dept && data.weekType === this.week && data.doctorName === this.doctorName) {
+            this.count[data.date - 1] = data.count
+          }
+        })
+      })
+    },
+    getData(dept, week,doctorName) {
+      this.$axios.post('/doctorRegistrationData').then(res => {
+        let datas = res.data.data;
+        const count = [0, 0, 0, 0, 0, 0, 0]
+        datas.forEach(data => {
+          if (data.departmentName === dept && data.weekType === week && data.doctorName === doctorName) {
+            count[data.date - 1] = data.count
+          }
+        })
+        this.getCharts1(count)
+        this.getCharts2(count)
+      })
+    },
+    getCharts1(array) {
+      var chartDom = this.$refs['box'];
+      var myChart = this.$echarts.init(chartDom);
+      var option;
+      option = {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: [
+          {
+            type: 'category',
+            data: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+            axisTick: {
+              alignWithLabel: true
+            }
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value'
+          }
+        ],
+        series: [
+          {
+            name: '预约数量',
+            type: 'bar',
+            barWidth: '60%',
+            data: array
+          }
+        ]
+      };
+
+      option && myChart.setOption(option);
+
+    },
+    getCharts2(count) {
+      var chartDom = this.$refs['pie'];
+      var myChart = this.$echarts.init(chartDom);
+      var option;
+      var seriesData = []
+      var name = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+      for (var i = 0; i < count.length; i++) {
+        seriesData.push({
+          value: count[i],
+          name: name[i]
+        })
+      }
+      option = {
+        title: {
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'item'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 'left'
+        },
+        series: [
+          {
+            name: '预约情况',
+            type: 'pie',
+            radius: '50%',
+            data: seriesData,
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            }
+          }
+        ]
+      };
+
+      option && myChart.setOption(option);
+    },
+    exportData() {
+    download().then((res) => {
+        let blob = new Blob([res.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        let url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a"); // 创建a标签
+        link.href = url;
+        link.download = "报表.xlsx"; // 重命名文件
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+    },
+  }
+}
+export function download() {
+  return axios({
+    url: '/export',
+    method: 'post',
+    data: "1",
+    responseType: 'blob'
+  })
+}
 </script>
 <style>
-.table {
+.box {
   width: 100%;
-  margin-top: 90px;
-  margin-left: 10%;
+  height: 450px;
+  margin-right: 30px;
+  margin-top: 100px;
 }
 
-.example-pagination-block+.example-pagination-block {
-  margin-top: 20px;
+.pie {
+  width: 100%;
+  height: 450px;
+  margin-top: 100px;
 }
 
-.example-pagination-block .example-demonstration {
-  margin-bottom: 16px;
+.main {
+  margin-top: 50px;
 }
 
-.page {
-  margin-top: 20px;
-  margin-left: 27%;
-  display: flex;
-  align-items: center;
-}
 </style>

@@ -1,61 +1,69 @@
 <template>
     <div class="row" style="margin-top: 30px;">
-        <div class="col-9">
+        <div class="col-8">
             <div class="frame">
-                <el-button>排班记录</el-button>
+                <el-button @click="recordsVisible = true">排班记录</el-button>
                 <div style="margin-bottom: 10px ;clear: both;">
 
                 </div>
-                <div v-for="dateInfo in date" class="arrangementtable">
-                    <div id="oneDay" class="oneday">
-                        <div id='date'>
-                            <label>{{ dateInfo.time }}</label>
-                            <label>{{ dateInfo.week }}</label>
-                        </div>
-
-                        <div id='am' class="halfday">
-                            <label>上午</label>
-
-                            <div v-for="info in arrangementInfo" :key="arrangementKey">
-                                <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
-                                    <el-popconfirm confirm-button-text="查看" cancel-button-text="删除" title="请选择"
-                                        @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
-                                        <template #reference>
-                                            <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
-                                                {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
-                                            </el-tag>
-                                        </template>
-                                    </el-popconfirm>
+                <el-scrollbar height="520px">
+                    <div class="scrollbar-flex-content">
+                        <div v-for="dateInfo in date" class="arrangementtable">
+                            <div id="oneDay" class="oneday">
+                                <div id='date'>
+                                    <label>{{ dateInfo.time }}</label>
+                                    <label>{{ dateInfo.week }}</label>
                                 </div>
-                            </div>
 
-                            <el-text class="button_text" type="primary"
-                                @click="addArrangement(dateInfo.time, '上午')">添加+</el-text>
-                        </div>
+                                <div id='am' class="halfday">
+                                    <label>上午</label>
 
-                        <div id='pm' class="halfday">
-                            <label>下午</label>
-                            <div v-for="info in arrangementInfo">
-                                <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
-                                    <el-popconfirm confirm-button-text="确认" cancel-button-text="取消" title="确认删除？"
-                                        @confirm="deleteArrangment(info)">
-                                        <template #reference>
-                                            <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag"
+                                    <div v-for="info in arrangementInfo" :key="arrangementKey">
+                                        <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
+                                            <el-popconfirm confirm-button-text="查看" cancel-button-text="删除" title="请选择"
                                                 @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
-                                                {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
-                                            </el-tag>
-                                        </template>
-                                    </el-popconfirm>
+                                                <template #reference>
+                                                    <el-tag :key="info.doctorName" type='info' size="large"
+                                                        class="arrangementTag">
+                                                        {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                    </el-tag>
+                                                </template>
+                                            </el-popconfirm>
+                                        </div>
+                                    </div>
+
+                                    <el-text class="button_text" type="primary"
+                                        @click="addArrangement(dateInfo.time, '上午')">添加+</el-text>
+                                </div>
+
+                                <div id='pm' class="halfday">
+                                    <label>下午</label>
+                                    <div v-for="info in arrangementInfo">
+                                        <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
+                                            <el-popconfirm confirm-button-text="查看" cancel-button-text="删除" title="请选择"
+                                                @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
+                                                <template #reference>
+                                                    <el-tag :key="info.doctorName" type='info' size="large"
+                                                        class="arrangementTag">
+                                                        {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                    </el-tag>
+                                                </template>
+                                            </el-popconfirm>
+                                        </div>
+                                    </div>
+
+                                    <el-text class="button_text" type="primary"
+                                        @click="addArrangement(dateInfo.time, '下午')">添加+</el-text>
                                 </div>
                             </div>
-
-                            <el-text class="button_text" type="primary"
-                                @click="addArrangement(dateInfo.time, '下午')">添加+</el-text>
                         </div>
                     </div>
-                </div>
+                </el-scrollbar>
             </div>
             <div style="margin-bottom: 50px ;clear: both;"></div>
+        </div>
+        <div class="col-1">
+
         </div>
         <div class="col-3">
             <doctorList></doctorList>
@@ -114,6 +122,54 @@
             <el-text size="large">16:30~17:00 {{ selectedArrangementInfo.number / 6 }}</el-text><br>
         </div>
     </el-dialog>
+
+    <el-dialog v-model="recordsVisible" style="min-height: 300px;" width="70%" title="排班记录" append-to-body draggable="true">
+        <el-scrollbar height="520px">
+            <div class="scrollbar-flex-content">
+                <div v-for="dateInfo in beforeDate" class="arrangementtable">
+                    <div id="oneDay" class="oneday">
+                        <div id='date'>
+                            <label>{{ dateInfo.time }}</label>
+                            <label>{{ dateInfo.week }}</label>
+                        </div>
+
+                        <div id='am' class="halfday">
+                            <label>上午</label>
+
+                            <div v-for="info in arrangementInfo" :key="arrangementKey">
+                                <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
+                                    <el-popconfirm confirm-button-text="查看" cancel-button-text="取消" title="请选择"
+                                         @confirm="openArrangmentInfo(info)">
+                                        <template #reference>
+                                            <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
+                                                {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                            </el-tag>
+                                        </template>
+                                    </el-popconfirm>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id='pm' class="halfday">
+                            <label>下午</label>
+                            <div v-for="info in arrangementInfo">
+                                <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
+                                    <el-popconfirm confirm-button-text="查看" cancel-button-text="取消"  title="请选择"
+                                         @confirm="openArrangmentInfo(info)">
+                                        <template #reference>
+                                            <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
+                                                {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                            </el-tag>
+                                        </template>
+                                    </el-popconfirm>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </el-scrollbar>
+    </el-dialog>
 </template>
 
 <script>
@@ -126,13 +182,17 @@ export default {
     },
     data() {
         return {
-            departmentId: '1002',
+            departmentId: '',
             time: [],
             week: [],
             date: [],
+            beforeTime: [],
+            beforeWeek: [],
+            beforeDate: [],
             arrangementInfo: [],
             addVisible: false,
             detailVisible: false,
+            recordsVisible:false,
             selectedDate: '',
             selectedAmOrPm: '',
             selectedDoctor: '',
@@ -153,9 +213,14 @@ export default {
         }
     },
     created() {
-        this.$axios.get("/arrangement/findByDepartmentId/" + this.departmentId).then(response => {
-            this.arrangementInfo = response.data.data
-        }).catch(error => { console.log(error) })
+        this.$axios.get("/arrangement/findDepartmentIdByDoctorId/" + this.$store.state.userId).then(response => {
+            this.departmentId = response.data.data
+            this.$axios.get("/arrangement/findByDepartmentId/" + this.departmentId).then(response => {
+                this.arrangementInfo = response.data.data
+            }).catch(error => { console.log(error) })
+        }).catch(error => {
+
+        });
 
         this.getNowDate()
     },
@@ -185,12 +250,12 @@ export default {
             // for (let i = 7; i < 14; i++) {  //后14天
             //     this.time.push(this.getAfterDate(i, nowTime))
             // }
-            for (let i = 0; i < 7; i++) {  //后7天
+            for (let i = 0; i < 14; i++) {  //后14天
                 this.time.push(this.getAfterDate(i, nowTime))
             }
-            // for (let i = 7; i >0 ; i--) {  //前七天
-            //     this.time.push(this.getBeforeDate(i, nowTime))
-            // }
+            for (let i = 14; i > 0; i--) {  //前14天
+                this.beforeTime.push(this.getBeforeDate(i, nowTime))
+            }
             this.date = [
                 { time: this.time[0], week: this.week[0] },
                 { time: this.time[1], week: this.week[1] },
@@ -199,6 +264,29 @@ export default {
                 { time: this.time[4], week: this.week[4] },
                 { time: this.time[5], week: this.week[5] },
                 { time: this.time[6], week: this.week[6] },
+                { time: this.time[7], week: this.week[7] },
+                { time: this.time[8], week: this.week[8] },
+                { time: this.time[9], week: this.week[9] },
+                { time: this.time[10], week: this.week[10] },
+                { time: this.time[11], week: this.week[11] },
+                { time: this.time[12], week: this.week[12] },
+                { time: this.time[13], week: this.week[13] },
+            ]
+            this.beforeDate = [
+                { time: this.beforeTime[0], week: this.week[14] },
+                { time: this.beforeTime[1], week: this.week[15] },
+                { time: this.beforeTime[2], week: this.week[16] },
+                { time: this.beforeTime[3], week: this.week[17] },
+                { time: this.beforeTime[4], week: this.week[18] },
+                { time: this.beforeTime[5], week: this.week[19] },
+                { time: this.beforeTime[6], week: this.week[20] },
+                { time: this.beforeTime[7], week: this.week[21] },
+                { time: this.beforeTime[8], week: this.week[22] },
+                { time: this.beforeTime[9], week: this.week[23] },
+                { time: this.beforeTime[10], week: this.week[24] },
+                { time: this.beforeTime[11], week: this.week[25] },
+                { time: this.beforeTime[12], week: this.week[26] },
+                { time: this.beforeTime[13], week: this.week[27] },
             ]
         },
         getAfterDate(num, time) {
@@ -264,6 +352,7 @@ export default {
         addArrangement(date, amOrPm) {
             this.selectedDoctor = '';
             this.selectedConsultingRoom = '';
+            this.numberSourceNum = 0;
             this.remainNumberSource = 0;
             this.addVisible = true;
             this.selectedDate = date;
@@ -457,8 +546,13 @@ export default {
     margin-top: 5%;
 }
 
+.scrollbar-flex-content {
+    display: flex;
+}
+
 .arrangementtable {
-    float: left;
+    /* float: left; */
+    /* display: flex; */
 }
 
 .oneday {

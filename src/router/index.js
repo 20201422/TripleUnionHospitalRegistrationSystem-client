@@ -85,16 +85,8 @@ const routes = [
         ]
     },
     {
-        path:'/managerMain',
-        name: 'managerMain',
-        component:managerMain,
-        children:[
-            { path: 'businessTable',component:businessTable},
-        ]
-    },
-    {
-        path:'/managerMain',
-        name: 'managerMain',
+        path:'/mangerMain',
+        name: 'mangerMain',
         component:managerMain,
         children:[
             { path: 'businessTable',component:businessTable},
