@@ -17,20 +17,11 @@
             <el-radio label="女" />
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="证件类型" prop="recordsPatientType"
-                      :rules="[{ required: true, message: '请选择证件类型', trigger: 'change' },]">
-          <el-select v-model="medicalRecords.recordsPatientType" placeholder="请选择证件类型">
-            <el-option label="大陆居民身份证" value="大陆居民身份证" />
-            <el-option label="港澳居民往来大陆通行证" value="港澳居民往来大陆通行证" />
-            <el-option label="台湾居民往来大陆通行证" value="台湾居民往来大陆通行证" />
-            <el-option label="护照" value="护照" />
-          </el-select>
+        <el-form-item label="证件类型" prop="recordsPatientType">
+          <el-input v-model="medicalRecords.recordsPatientType" :readonly="true" />
         </el-form-item>
-        <el-form-item label="证件号" prop="recordsId"
-                      :rules="[{ required: true, message: '请输入证件号', trigger: 'blur' },
-                        { min: 1, max: 30, message: '长度不超过30', trigger: 'blur' },
-                        { pattern: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/, message: '检查证件号', trigger: 'blur' }, ]">
-          <el-input v-model="medicalRecords.recordsId" placeholder="请输入证件号" />
+        <el-form-item label="证件号" prop="recordsId">
+          <el-input v-model="medicalRecords.recordsId" placeholder="请输入证件号" :readonly="true" />
         </el-form-item>
         <el-form-item label="联系方式" prop="recordsPatientPhoneNumber"
                       :rules="[{ required: true, message: '请输入联系方式', trigger: 'blur' },
@@ -109,8 +100,6 @@ export default {
     update: function() {
       if (this.medicalRecords.recordsName.length > 0 && this.medicalRecords.recordsName.length <= 100 &&
           this.medicalRecords.recordsPatientType.length > 0 &&
-          this.medicalRecords.recordsId.match(/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/) &&
-          this.medicalRecords.recordsId.length <= 30 &&
           this.medicalRecords.recordsPatientPhoneNumber.match(/((\d{11})|^((\d{7,8})|(\d{4}|\d{3})-(\d{7,8})|(\d{4}|\d{3})-(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1})|(\d{7,8})-(\d{4}|\d{3}|\d{2}|\d{1}))$)/) &&
           this.medicalRecords.recordsPatientPhoneNumber.length <= 20 && this.medicalRecords.recordsPatientAddress.length > 0 &&
           this.medicalRecords.recordsPatientAddress.length <= 200) {
