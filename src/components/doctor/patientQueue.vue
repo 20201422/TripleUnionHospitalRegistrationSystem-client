@@ -7,14 +7,14 @@
             <el-table-column prop="numberSourceDate" sortable label="预约日期" width="150" align="center" />
             <el-table-column prop="consultationPeriod" label="预约时段" width="150" align="center" />
             <el-table-column prop="recordsPatientSex" label="性别" width="80" align="center" />
-            <el-table-column prop="recordsPatientAddress" label="地址" width="220" align="center" />
-            <el-table-column fixed="right" label="操作" width="120" align="center">
+            <el-table-column prop="recordsPatientAddress" label="地址" width="380" align="center" />
+            <!-- <el-table-column fixed="right" label="操作" width="120" align="center">
                 <template #default="index">
                     <el-button link type="primary" size="large">
                         <span>查看</span>
                     </el-button>
                 </template>
-            </el-table-column>
+            </el-table-column> -->d
         </el-table>
         <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
             :current-page="pagination.current" :page-sizes="[6, 10]" :page-size="pagination.size"
