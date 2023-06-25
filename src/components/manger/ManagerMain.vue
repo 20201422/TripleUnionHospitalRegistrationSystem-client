@@ -5,17 +5,19 @@
       <el-menu class="el-menu-vertical-demo" :collapse="isCollapse">
         <el-sub-menu index="1">
           <template #title>业务管理</template>
-          <router-link to='/mangerMain/businessTable' class="navs">
+          <router-link to='/mangerMain/showBusiness' class="navs">
             <el-menu-item index="1-1">业务查看</el-menu-item>
           </router-link>
         </el-sub-menu>
         <el-sub-menu index="2">
           <template #title>黑名单管理</template>
-          <el-menu-item index="2-1">查看黑名单</el-menu-item>
+          <router-link to='/mangerMain/showBlockList' class="navs">
+            <el-menu-item index="2-1">查看黑名单</el-menu-item>
+          </router-link>
         </el-sub-menu>
         <el-sub-menu index="3">
           <template #title>号源管理</template>
-          <router-link to='/mangerMain/numberSource' class="navs">
+          <router-link to='/mangerMain/showNumberSource' class="navs">
             <el-menu-item index="3-1">号源查看</el-menu-item>
           </router-link>
         </el-sub-menu>

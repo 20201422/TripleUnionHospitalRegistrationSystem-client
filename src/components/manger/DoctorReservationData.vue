@@ -1,5 +1,5 @@
 <template>
-  <div class="main"></div>
+  <div class="charts"></div>
   <el-select class="el-st" @change="getData(dept, week, doctorName)" v-model="week" clearable>
     <el-option v-for="option in weekList" :value="option">
       {{ option }}
@@ -53,7 +53,7 @@ export default {
 
   methods: {
     init() {
-      this.$axios.post('/doctorRegistrationData').then(res => {
+      this.$axios.post('/numberSourceDetail/doctorRegistrationData').then(res => {
         let datas = res.data.data;
         datas.forEach(data => {
           if (!this.deptList.includes(data.departmentName)) {
@@ -74,7 +74,7 @@ export default {
       })
     },
     getData(dept, week,doctorName) {
-      this.$axios.post('/doctorRegistrationData').then(res => {
+      this.$axios.post('/numberSourceDetail/doctorRegistrationData').then(res => {
         let datas = res.data.data;
         const count = [0, 0, 0, 0, 0, 0, 0]
         datas.forEach(data => {
@@ -187,7 +187,7 @@ export default {
 }
 export function download() {
   return axios({
-    url: '/export',
+    url: '/excel/export',
     method: 'post',
     data: "1",
     responseType: 'blob'
@@ -199,7 +199,7 @@ export function download() {
   width: 100%;
   height: 450px;
   margin-right: 30px;
-  margin-top: 100px;
+  margin-top: 80px;
 }
 
 .pie {
@@ -208,8 +208,8 @@ export function download() {
   margin-top: 100px;
 }
 
-.main {
-  margin-top: 50px;
+.charts {
+  margin-top: 60px;
 }
 
 </style>
