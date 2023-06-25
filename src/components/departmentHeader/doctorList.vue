@@ -30,7 +30,6 @@ export default {
     },
     created() {
         this.$axios.get("/doctor/doctors/" + this.departmentId).then(response => {
-            console.log(response.data)
             this.doctorList = response.data.data
         }).catch(error => { console.log(error) });
     },
