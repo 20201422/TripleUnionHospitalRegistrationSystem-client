@@ -100,7 +100,6 @@ export default {
   computed:{
     defaultDate() {
       const date = this.getFirstEnabledDate();
-      this.pickerdate = this.formatDate(date)
       return new Date(this.formatDate(date));
     },
   },
@@ -169,7 +168,6 @@ export default {
       }
       else {
         this.selectdisabled = false
-        this.pickerdisabled = false
         if (this.roomtype.length > 0) {
           this.forbidDate()
         }
@@ -189,7 +187,7 @@ export default {
     },
 
     handleChange3() {
-      if (this.pickerdate === "") {
+      if (this.pickerdate === ""||this.pickerdate === null) {
         this.disabled = true
       }
       else {
