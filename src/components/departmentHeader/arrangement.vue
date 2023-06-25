@@ -93,7 +93,7 @@
         <br><br>
         <el-text size="large">剩余号源数量 {{ remainNumberSource }}</el-text>
 
-        <div style="margin-left: 81%;margin-top: 10px;">
+        <div style="margin-left: 79%;margin-right: 2%;margin-top: 10px;" class="row">
             <el-button type="primary" @click="confirmAdd">确认</el-button>
             <el-button @click="cancel">取消</el-button>
         </div>
