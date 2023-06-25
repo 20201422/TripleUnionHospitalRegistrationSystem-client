@@ -36,11 +36,10 @@
         layout="total, sizes, prev, pager, next, jumper" :total="pagination.total" class="page">
       </el-pagination>
 
-      <el-dialog v-model="Visible" style="min-height: 300px;" width="50%" title="添加业务" append-to-body draggable="true">
+      <el-dialog v-model="Visible" style="min-height: 300px;" width="50%" title="添加号源" append-to-body draggable="true">
         <el-text style="margin-left: 200px;">科室名称：</el-text>
         <el-select style="width: 205px;" @change="handleChange" v-model="deptname" clearable placeholder="选择科室">
-          <el-option v-for="deptn in deptnameList" :value="deptn"
-            :label="deptn" />
+          <el-option v-for="deptn in deptnameList" :value="deptn" :label="deptn" />
         </el-select>
         <br><br>
         <el-text style="margin-left: 200px;">门诊类型：</el-text>
@@ -51,11 +50,11 @@
         <br><br>
         <el-text style="margin-left: 200px;">所属日期：</el-text>
         <el-date-picker style="width: 205px;" @change="handleChange3" v-model="pickerdate" format="YYYY-MM-DD"
-        value-format="YYYY-MM-DD" type="datetime" placeholder="选择时间" :default-time="defaultTime" :disabled="pickerdisabled"
-          :disabled-date="disabledDates" />
+          value-format="YYYY-MM-DD" type="datetime" placeholder="选择时间" :default-value="defaultDate"
+          :disabled="pickerdisabled" :disabled-date="disabledDates" />
         <br><br>
         <el-text style="margin-left: 200px;">挂号费用：</el-text>
-        <el-input-number style="width: 205px;" v-model="numberSourceFee" />
+        <el-input-number style="width: 205px;" :min="20" v-model="numberSourceFee" />
         <div style="margin-left: 81%;margin-top: 10px;">
           <el-button type="primary" @click="sumbit" :disabled="disabled">确认</el-button>
           <el-button @click="cancel">取消</el-button>
@@ -88,7 +87,7 @@ export default {
       roomtype: "",
       rooms: ['普通门诊', '专家门诊', '特需门诊'],
       num: 0,
-      numberSourceFee:0,
+      numberSourceFee: 20,
       nums: [120, 300, 480, 600],
       selectdisabled: true,
       pickerdisabled: true,
@@ -99,6 +98,13 @@ export default {
     this.getNumberSource()
     this.init()
     this.initDepartment()
+  },
+  computed:{
+    defaultDate() {
+      const date = this.getFirstEnabledDate();
+      this.pickerdate = this.formatDate(date)
+      return this.formatDate(date);
+    },
   },
   methods: {
 
@@ -164,6 +170,9 @@ export default {
       }
       else {
         this.selectdisabled = false
+        if (this.roomtype.length > 0) {
+          this.forbidDate()
+        }
       }
     },
 
@@ -173,17 +182,9 @@ export default {
       }
       else {
         this.pickerdisabled = false;
-        this.$axios.get('/numberSource/forbidDate', {
-          params: {
-            departmentName: this.deptname,
-            consultingRoomType: this.roomtype,
-          },
-        }).then(res => {
-          this.pickerdates = res.data.data
-          console.log(this.pickerdates)
-        }).catch(error => {
-          this.$message = error.message;
-        })
+        if (this.deptname.length > 0) {
+          this.forbidDate()
+        }
       }
     },
 
@@ -196,8 +197,46 @@ export default {
       }
     },
 
+    forbidDate() {
+      this.$axios.get('/numberSource/forbidDate', {
+        params: {
+          departmentName: this.deptname,
+          consultingRoomType: this.roomtype,
+        },
+      }).then(res => {
+        this.pickerdates = res.data.data
+        console.log(this.pickerdates)
+      }).catch(error => {
+        this.$message = error.message;
+      })
+    },
+
     disabledDates: function (date) {
-      return this.pickerdates.indexOf(date) !== -1;
+      const today = new Date();
+      const dateObjects = this.pickerdates.map(dateString => new Date(dateString));
+      return date <= today||dateObjects.some(disabledDate => {
+        return this.formatDate(disabledDate) === this.formatDate(date);
+      });
+    },
+
+    disabledDate(date) {
+      return this.disabledDates(date);
+    },
+
+    getFirstEnabledDate() {
+      const date = new Date();
+      while (this.disabledDate(date)) {
+        console.log(this.disabledDate(date))
+        date.setDate(date.getDate() + 1);
+      }
+      return date;
+    },
+
+    formatDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     },
 
     //改变当前记录条数

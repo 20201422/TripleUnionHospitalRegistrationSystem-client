@@ -89,7 +89,7 @@ export default {
       deptnameList: [],
       roomtype: "",
       rooms: ['普通门诊', '专家门诊', '特需门诊'],
-      num: 0,
+      num: 120,
       nums: [120, 300, 480, 600],
       disabled: true,
     };
