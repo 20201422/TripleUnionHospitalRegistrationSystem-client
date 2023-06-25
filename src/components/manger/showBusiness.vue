@@ -41,7 +41,7 @@
         layout="total, sizes, prev, pager, next, jumper" :total="pagination.total" class="page">
       </el-pagination>
 
-      <el-dialog v-model="Visible" style="min-height: 300px;" width="50%" title="添加业务" append-to-body draggable="true">
+      <el-dialog :draggable=true v-model="Visible" style="min-height: 300px;" width="50%" title="添加业务" append-to-body>
         <el-text style="margin-left: 200px;">科室名称：</el-text>
         <el-select @change="handleChange" v-model="deptname" clearable placeholder="选择科室">
           <el-option v-for="deptn in deptnameList" :key="deptn.departmentId" :value="deptn.departmentId"
