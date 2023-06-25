@@ -69,7 +69,7 @@
             <doctorList></doctorList>
         </div>
     </div>
-    <el-dialog v-model="addVisible" style="min-height: 300px;" width="50%" title="添加排班" append-to-body draggable="true">
+    <el-dialog v-model="addVisible" style="min-height: 300px;" width="50%" title="添加排班" append-to-body :draggable=true>
         <el-text size="large">{{ this.selectedDate }}</el-text>&nbsp;&nbsp;
         <el-text size="large">{{ this.selectedAmOrPm }}</el-text><br><br>
         <el-text size="large">号源总数</el-text>&nbsp;&nbsp;
@@ -99,7 +99,7 @@
         </div>
     </el-dialog>
 
-    <el-dialog v-model="detailVisible" style="min-height: 300px;" width="50%" title="排班详情" append-to-body draggable="true">
+    <el-dialog v-model="detailVisible" style="min-height: 300px;" width="50%" title="排班详情" append-to-body :draggable=true>
         <el-text size="large">{{ this.selectedArrangementInfo.numberSourceDate }}</el-text>&nbsp;&nbsp;
         <el-text size="large">{{ this.selectedArrangementInfo.amOrPm }}</el-text><br><br>
         <el-text size="large">医生：{{ this.selectedArrangementInfo.doctorName }}</el-text>&nbsp;&nbsp;
@@ -123,7 +123,7 @@
         </div>
     </el-dialog>
 
-    <el-dialog v-model="recordsVisible" style="min-height: 300px;" width="70%" title="排班记录" append-to-body draggable="true">
+    <el-dialog v-model="recordsVisible" style="min-height: 300px;" width="70%" title="排班记录" append-to-body :draggable=true>
         <el-scrollbar height="520px">
             <div class="scrollbar-flex-content">
                 <div v-for="dateInfo in beforeDate" class="arrangementtable">
