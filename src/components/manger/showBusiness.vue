@@ -41,7 +41,7 @@
         </el-table-column>
       </el-table>
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-        :current-page="pagination.current" :page-sizes="[6, 10]" :page-size="pagination.size"
+        :current-page="pagination.current" :page-sizes="[6, 12]" :page-size="pagination.size"
         layout="total, sizes, prev, pager, next, jumper" :total="pagination.total" class="page">
       </el-pagination>
 

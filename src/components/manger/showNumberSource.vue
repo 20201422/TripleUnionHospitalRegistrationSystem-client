@@ -236,6 +236,10 @@ export default {
       return this.disabledDates(date);
     },
 
+    isPositiveInt(num) {
+      return /^\d+(\.\d{2})?$/.test(num);
+    },
+
     getFirstEnabledDate() {
       const date = new Date();
       while (this.disabledDate(date)) {
@@ -272,19 +276,26 @@ export default {
         row['numberSourceFee'] = this.beforeFee
       }
       else {
-        this.$axios.get('/numberSource/updateFee', {
-          params: {
-            departmentName: row['departmentName'],
-            consultingRoomType: row['consultingRoomType'],
-            numberSourceDate: row['numberSourceDate'],
-            numberSourceFee: row['numberSourceFee']
-          }
-        }).then(res => {
+        if (this.isPositiveInt(row['numberSourceFee'])) {
+          this.$axios.get('/numberSource/updateFee', {
+            params: {
+              departmentName: row['departmentName'],
+              consultingRoomType: row['consultingRoomType'],
+              numberSourceDate: row['numberSourceDate'],
+              numberSourceFee: row['numberSourceFee']
+            }
+          }).then(res => {
+            ElMessage({
+              message: res.data.data,
+              type: 'warning'
+            })
+          })
+        }else {
           ElMessage({
-            message: res.data.data,
+            message: '请输入正数以及保留两位小数！',
             type: 'warning'
           })
-        })
+        }
       }
     },
 
