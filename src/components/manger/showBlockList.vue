@@ -1,22 +1,22 @@
 <template>
   <div class="main"></div>
   <div class="st-part">
-    <el-select class="el-st" placeholder="选择姓名" @change="getBlocklist" v-model="name" clearable>
+    <el-select class="el-st" placeholder="选择姓名" @change="getBlocklist" v-model="name" filterable clearable>
       <el-option v-for="option in nameList" :value="option">
         {{ option }}
       </el-option>
     </el-select>
-    <el-select class="el-st" placeholder="选择性别" @change="getBlocklist" v-model="sex" clearable>
+    <el-select class="el-st" placeholder="选择性别" @change="getBlocklist" v-model="sex" filterable clearable>
       <el-option v-for="option in sexList" :value="option">
         {{ option }}
       </el-option>
     </el-select>
-    <el-select class="el-st" placeholder="选择进入时间" @change="getBlocklist" v-model="joinTime" clearable>
+    <el-select class="el-st" placeholder="选择进入时间" @change="getBlocklist" v-model="joinTime" filterable clearable>
       <el-option v-for="option in joinTimeList" :value="option">
         {{ option }}
       </el-option>
     </el-select>
-    <el-select class="el-st" placeholder="选择移出时间" @change="getBlocklist" v-model="removeTime" clearable>
+    <el-select class="el-st" placeholder="选择移出时间" @change="getBlocklist" v-model="removeTime" filterable clearable>
       <el-option v-for="option in removeTimeList" :value="option">
         {{ option }}
       </el-option>
