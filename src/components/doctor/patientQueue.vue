@@ -16,7 +16,7 @@
             </el-table-column> -->d
         </el-table>
         <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-            :current-page="pagination.current" :page-sizes="[6, 10]" :page-size="pagination.size"
+            :current-page="pagination.current" :page-sizes="[10, 5]" :page-size="pagination.size"
             layout="total, sizes, prev, pager, next, jumper" :total="pagination.total" class="page">
         </el-pagination>
     </div>
@@ -32,7 +32,7 @@ export default {
             pagination: {
                 current: 1, //当前页
                 total: 0, //记录条数
-                size: 6, //每页条数
+                size: 10, //每页条数
             },
 
             grey: Global_color.model_color,
