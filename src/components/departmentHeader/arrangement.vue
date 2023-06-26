@@ -495,7 +495,7 @@ export default {
                 return;
             } else if (!r.test(this.numberSourceNum)) {
                 ElMessage({
-                    message: '添加失败，号源数量不是整数！',
+                    message: '添加失败，号源数量不是正整数！',
                     type: 'warning',
                 })
                 return;
@@ -529,14 +529,14 @@ export default {
                             })
                             return;
                         } else {
-                            this.$axios.get("/arrangement/getNumberSourceByDate", {
+                            this.$axios.get("/arrangement/getNumberSourceByDate", {   //通过日期和门诊类型得到号源id数组
                                 params: {
                                     date: this.selectedDate,
                                     amOrPm: this.selectedAmOrPm,
                                     consultingRoomType: this.selectedConsultingRoomType
                                 }
                             }).then(response => {
-                                this.$axios.get("/arrangement/addInfo", {
+                                this.$axios.get("/arrangement/addInfo", {    //添加排班明细
                                     params: {
                                         doctorId: this.selectedDoctor,
                                         consultingRoomId: this.selectedConsultingRoom,
@@ -548,9 +548,10 @@ export default {
 
                                     }
                                 }).then(response => {
+                                    //由于后面插入号源明细需要点时间，所以在这里更新界面，可以让用户察觉不到延迟
                                     this.$axios.get("/arrangement/findByDepartmentId/" + this.departmentId).then(response => {
                                         this.arrangementInfo = response.data.data
-                                        this.arrangementKey++;
+                                        this.arrangementKey++;    //和v-for绑定，用于更新
                                     }).catch(error => { console.log(error) })
 
                                 }).catch(error => console.log(error))
@@ -558,12 +559,12 @@ export default {
                                 var id = []
                                 id = response.data.data  //号源id数组
                                 var numberSourceId = ''
-                                for (var i = 0; i < id.length; i++) {
-                                    numberSourceId += id[i] + ','
+                                for (var i = 0; i < id.length; i++) {  //号源id拼接，因为不会传数组
+                                    numberSourceId += id[i] + ','      
                                 }
 
                                 var count = this.numberSourceNum  //总号源数
-                                this.$axios.get("/arrangement/add", {
+                                this.$axios.get("/arrangement/add", {   //添加排班
                                     params: {
                                         doctorId: this.selectedDoctor,
                                         consultingRoomId: this.selectedConsultingRoom,
@@ -571,7 +572,7 @@ export default {
                                         number: count,
                                     },
                                 }).then(response => {
-                                    this.$axios.get("/numberSourceDetail/addNumberSourceDetail", {
+                                    this.$axios.get("/numberSourceDetail/addNumberSourceDetail", {  //添加号源明细
                                         params: {
                                             doctorId: this.selectedDoctor,
                                             numberSourceDate: this.selectedDate,
