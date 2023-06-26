@@ -1,7 +1,6 @@
 <template>
-    <div style="margin-top: 12%;margin-left: 6%;">
-        <el-table :data="patientQueue" style="width: 85%" 
-            :default-sort="{ prop: 'numberSourceDate', order: 'descending' }">
+    <div style="margin-top: 7%;width: 80%;">
+        <el-table :data="patientQueue" :default-sort="{ prop: 'numberSourceDate', order: 'descending' }">
             <el-table-column prop="patientName" label="挂号人姓名" width="120" align="center" />
             <el-table-column prop="recordsName" label="就诊人姓名" width="120 " align="center" />
             <el-table-column prop="numberSourceDate" sortable label="预约日期" width="150" align="center" />
@@ -24,6 +23,7 @@
 </template>
 
 <script>
+import Global_color from "@/app/Global_color.vue";
 export default {
     data() {
         return {
@@ -34,6 +34,9 @@ export default {
                 total: 0, //记录条数
                 size: 6, //每页条数
             },
+
+            grey: Global_color.model_color,
+            green: Global_color.main_color,
         }
     },
     created() {
@@ -60,4 +63,19 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.patient-list {
+    border-radius: 18px;
+    background-color: v-bind(grey);
+    padding: 12px 12px 12px 12px;
+    transition: all 0.45s;
+    margin-top: 5%;
+    width:85%;
+}
+
+.patient-list:hover {
+    box-shadow: 1px 1px 20px v-bind(green);
+    border-radius: 20px;
+    transform: scale(1.01);
+}
+</style>
