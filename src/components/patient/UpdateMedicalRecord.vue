@@ -33,7 +33,7 @@
         <el-form-item label="家庭住址" prop="recordsPatientAddress"
                       :rules="[{ required: true, message: '请输入家庭住址', trigger: 'blur' },
                         { min: 1, max: 200, message: '长度在1-200', trigger: 'blur' },]">
-          <el-input v-model="medicalRecords.recordsPatientAddress" placeholder="请输入家庭住址" />
+          <el-input type="textarea" v-model="medicalRecords.recordsPatientAddress" placeholder="请输入家庭住址" />
         </el-form-item>
       </el-form>
     </template>
@@ -147,5 +147,8 @@ export default {
 </script>
 
 <style scoped>
-
+.dialog-footer {
+  display: flex;
+  justify-content: space-between;
+}
 </style>

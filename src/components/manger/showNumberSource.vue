@@ -61,7 +61,7 @@
         <br><br>
         <el-text style="margin-left: 200px;">挂号费用：</el-text>
         <el-input-number style="width: 205px;" :min="20" v-model="numberSourceFee" />
-        <div style="margin-left: 81%;margin-top: 10px;">
+        <div style="margin-top: 10px;display: flex;justify-content: flex-end;">
           <el-button type="primary" @click="sumbit" :disabled="disabled">确认</el-button>
           <el-button @click="cancel">取消</el-button>
         </div>
@@ -236,6 +236,10 @@ export default {
       return this.disabledDates(date);
     },
 
+    isPositiveInt(num) {
+      return /^\d+(\.\d{2})?$/.test(num);
+    },
+
     getFirstEnabledDate() {
       const date = new Date();
       while (this.disabledDate(date)) {
@@ -272,19 +276,27 @@ export default {
         row['numberSourceFee'] = this.beforeFee
       }
       else {
-        this.$axios.get('/numberSource/updateFee', {
-          params: {
-            departmentName: row['departmentName'],
-            consultingRoomType: row['consultingRoomType'],
-            numberSourceDate: row['numberSourceDate'],
-            numberSourceFee: row['numberSourceFee']
-          }
-        }).then(res => {
+        if (this.isPositiveInt(row['numberSourceFee'])) {
+          this.$axios.get('/numberSource/updateFee', {
+            params: {
+              departmentName: row['departmentName'],
+              consultingRoomType: row['consultingRoomType'],
+              numberSourceDate: row['numberSourceDate'],
+              numberSourceFee: row['numberSourceFee']
+            }
+          }).then(res => {
+            ElMessage({
+              message: res.data.data,
+              type: 'warning'
+            })
+          })
+        }else {
           ElMessage({
-            message: res.data.data,
+            message: '请输入正数以及保留两位小数！',
             type: 'warning'
           })
-        })
+          row['numberSourceFee'] = this.beforeFee
+        }
       }
     },
 
