@@ -65,6 +65,7 @@
 </template>
 
 <script>
+import { ElMessage } from 'element-plus';
 export default {
   data() {
     return {
@@ -258,6 +259,10 @@ export default {
           numberSourceFee: this.numberSourceFee,
         }
       }).then(res => {
+        ElMessage({
+          message: res.data.data,
+          type:'warning'
+        })
         this.cancel();
         this.getNumberSource();
         this.init();
