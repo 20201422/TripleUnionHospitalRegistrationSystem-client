@@ -6,13 +6,13 @@
                 text-color="#fff">
                 <label style="color: white; font-size: larger;margin: 30px 0px 30px 40px;">医生{{this.$store.state.userName}}你好</label>
                 <el-menu-item index="1">
-                    <router-link to='/doctorMain/personalInformation' class="navs">个人信息</router-link>
+                    <router-link to='/doctorMain/personalInformation' class="navs" :class='{ routerLinkActive }'>个人信息</router-link>
                 </el-menu-item>
                 <el-menu-item index="2">
-                    <router-link to='/doctorMain/patientQueue' class="navs">预约患者</router-link>
+                    <router-link to='/doctorMain/patientQueue' class="navs" :class='{ routerLinkActive }'>预约患者</router-link>
                 </el-menu-item>
                 <el-menu-item index="3">
-                    <router-link to='/doctorMain/myArrangement' class="navs">我的排班</router-link>
+                    <router-link to='/doctorMain/myArrangement' class="navs" :class='{ routerLinkActive }'>我的排班</router-link>
                 </el-menu-item>
                 <!-- <el-menu-item index="4">
                     <router-link to='/doctorMain/changeshiftApply' class="navs">调班申请</router-link>
@@ -88,5 +88,8 @@ export default {
 
 .navs:hover {
     text-decoration: none;
+}
+.router-link-active {
+  font-size: 20px;
 }
 </style>
