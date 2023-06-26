@@ -65,6 +65,7 @@
 </template>
 
 <script>
+import { ElMessage } from 'element-plus';
 export default {
   data() {
     return {
@@ -211,6 +212,7 @@ export default {
 
     disabledDates: function (date) {
       const today = new Date();
+      today.setDate(today.getDate() + 7);
       const dateObjects = this.pickerdates.map(dateString => new Date(dateString));
       return date <= today||dateObjects.some(disabledDate => {
         return this.formatDate(disabledDate) === this.formatDate(date);
@@ -257,6 +259,10 @@ export default {
           numberSourceFee: this.numberSourceFee,
         }
       }).then(res => {
+        ElMessage({
+          message: res.data.data,
+          type:'warning'
+        })
         this.cancel();
         this.getNumberSource();
         this.init();
