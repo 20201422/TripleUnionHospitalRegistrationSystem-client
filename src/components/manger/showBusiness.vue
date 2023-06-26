@@ -54,10 +54,7 @@
         </el-select>
         <br><br>
         <el-text style="margin-left: 200px;">号源数量：</el-text>
-        <el-select @change="handleChange" v-model="num" clearable placeholder="设置号源数量">
-          <el-option v-for="option in nums" :value="option" />
-        </el-select>
-
+        <el-input-number style="width: 205px;" v-model="num" />
         <div style="margin-left: 81%;margin-top: 10px;">
           <el-button type="primary" @click="sumbit" :disabled="disabled">确认</el-button>
           <el-button @click="cancel">取消</el-button>
@@ -68,6 +65,7 @@
 </template>
 
 <script>
+import { ElMessage } from 'element-plus';
 export default {
   data() {
     return {
@@ -185,6 +183,10 @@ export default {
           numberSourceNumber: this.num
         }
       }).then(res => {
+        ElMessage({
+          message: res.data.data,
+          type:'warning'
+        })
         this.cancel()
         this.getBusiness();
         this.init();
