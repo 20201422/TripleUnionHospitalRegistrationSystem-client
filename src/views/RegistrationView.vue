@@ -4,7 +4,8 @@
 
   <div class="date">
     <el-space wrap>
-      <el-card v-for="i in 7" :key="i" class="box-card" @click="handleCardClick(i)">
+      <el-card v-for="i in 7" :key="i" :class="{'box-card': true, 'selected-card': selectedCard === i}"
+               @click="handleCardClick(i)">
         {{ moment().add(i-1, 'days').format('YYYY-MM-DD') }}<br>
         {{ moment().add(i-1, 'days').format('dddd') }}
       </el-card>
@@ -72,12 +73,16 @@ export default {
       amOrPm: '',
 
       moment: moment,
+
+      selectedCard: null,
     }
   },
 
   methods: {
 
     handleCardClick: function(i) {
+      this.selectedCard = i;
+
       const date = moment().add(i-1, 'days').format('YYYY-MM-DD');
 
       this.$axios.post('numberSource/patientGetNumberSource' ,  {
@@ -161,6 +166,7 @@ export default {
 .date {
   padding-top: 72px;
   text-align: center;
+  margin-bottom: 2px;
 }
 .date:hover {
   cursor: pointer;
@@ -183,5 +189,11 @@ export default {
   background-image: url("@/assets/background.jpg");
   border-color: #175850;
   color: #F2F2F2;
+}
+.selected-card {
+  color: #F2F2F2;
+}
+.selected-card.is-always-shadow {
+  background-image: url("@/assets/background.jpg");
 }
 </style>
