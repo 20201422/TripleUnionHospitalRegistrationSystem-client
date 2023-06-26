@@ -504,42 +504,47 @@ export default {
 
                 var id = []
                 id = response.data.data  //号源id数组
-
-                var num = parseInt(this.numberSourceNum / 6)  //将所有号源数量均分到6个时段
+                var numberSourceId = ''
+                for (var i = 0; i < id.length; i++){
+                    numberSourceId+=id[i]+','
+                }
+                
+                console.log(id)
                 //平均分配算法 --- 将所有号源均分到每个时段
                 var count = this.numberSourceNum  //总号源数
                 var cores = id.length    //时间段数量
-                for (var idx = 0; idx < cores; idx++) {
-                    var min = parseInt(count * idx / cores);
-                    var max = parseInt(count * (idx + 1) / cores);
-                    var averageNum = 0
-                    for (var i = min; i < max; i++) {
-                        averageNum++
-                    }
-                    // console.log(id[idx]+":"+averageNum)
-                    this.$axios.get("/arrangement/add", {
-                        params: {
-                            doctorId: this.selectedDoctor,
-                            consultingRoomId: this.selectedConsultingRoom,
-                            numberSourceId: id[idx],
-                            number: averageNum
-                        }
-                    }).then(response => {
-
-                    }).catch(error => { console.log(error) })
-                }
-                // for (var i = 0; i < id.length; i++) {
+                // for (var idx = 0; idx < cores; idx++) {
+                //     var min = parseInt(count * idx / cores);
+                //     var max = parseInt(count * (idx + 1) / cores);
+                //     var averageNum = 0
+                //     for (var i = min; i < max; i++) {
+                //         averageNum++
+                //     }
+                //     // console.log(id[idx]+":"+averageNum)
                 //     this.$axios.get("/arrangement/add", {
                 //         params: {
                 //             doctorId: this.selectedDoctor,
                 //             consultingRoomId: this.selectedConsultingRoom,
-                //             numberSourceId: id[i],
-                //             number: num
+                //             numberSourceId: id[idx],
+                //             number: averageNum
                 //         }
                 //     }).then(response => {
 
                 //     }).catch(error => { console.log(error) })
                 // }
+
+                this.$axios.get("/arrangement/add", {
+                    params: {
+                        doctorId: this.selectedDoctor,
+                        consultingRoomId: this.selectedConsultingRoom,
+                        numberSourceId: numberSourceId,
+                        number: count,
+                    },
+                }).then(response => {
+
+                }).catch(error => { console.log(error) })
+
+
                 ElMessage({
                     message: '添加成功',
                     type: 'success',
