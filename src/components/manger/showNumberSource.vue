@@ -272,29 +272,39 @@ export default {
     },
 
     updateData(row) {
-      if (row['numberSourceFee'] < 20) {
-        row['numberSourceFee'] = this.beforeFee
-      }
-      else {
-        if (this.isPositiveInt(row['numberSourceFee'])) {
-          this.$axios.get('/numberSource/updateFee', {
-            params: {
-              departmentName: row['departmentName'],
-              consultingRoomType: row['consultingRoomType'],
-              numberSourceDate: row['numberSourceDate'],
-              numberSourceFee: row['numberSourceFee']
-            }
-          }).then(res => {
-            ElMessage({
-              message: res.data.data,
-              type: 'warning'
-            })
-          })
-        }else {
+      if (this.isPositiveInt(row['numberSourceFee'])) {
+        this.$axios.get('/numberSource/updateFee', {
+          params: {
+            departmentName: row['departmentName'],
+            consultingRoomType: row['consultingRoomType'],
+            numberSourceDate: row['numberSourceDate'],
+            numberSourceFee: row['numberSourceFee']
+          }
+        }).then(res => {
           ElMessage({
-            message: '请输入正数以及保留两位小数！',
+            message: res.data.data,
             type: 'warning'
           })
+        })
+      } else {
+        ElMessage({
+          message: '请输入正数以及保留两位小数！',
+          type: 'warning'
+        })
+        row['numberSourceFee'] = this.beforeFee
+      }
+      if (row['consultingRoomType'] === "普通门诊") {
+        if (row['numberSourceFee'] < 20 || row['numberSourceFee'] > 50) {
+          row['numberSourceFee'] = this.beforeFee
+        }
+      }
+      if (row['consultingRoomType'] === "专家门诊") {
+        if (row['numberSourceFee'] < 40 || row['numberSourceFee'] > 120) {
+          row['numberSourceFee'] = this.beforeFee
+        }
+      }
+      if (row['consultingRoomType'] === "特需门诊") {
+        if (row['numberSourceFee'] < 300 || row['numberSourceFee'] > 500) {
           row['numberSourceFee'] = this.beforeFee
         }
       }
