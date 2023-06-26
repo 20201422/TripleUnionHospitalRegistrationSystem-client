@@ -59,7 +59,7 @@
         <br><br>
         <el-text style="margin-left: 200px;">号源数量：</el-text>
         <el-input-number :integer=true style="width: 205px;" v-model="num" :step="1" />
-        <div style="margin-left: 81%;margin-top: 10px;">
+        <div style="margin-top: 10px;display: flex;justify-content: flex-end;">
           <el-button type="primary" @click="sumbit" :disabled="disabled">确认</el-button>
           <el-button @click="cancel">取消</el-button>
         </div>
