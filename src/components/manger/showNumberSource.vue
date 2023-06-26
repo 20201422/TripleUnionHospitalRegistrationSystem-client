@@ -295,6 +295,7 @@ export default {
             message: '请输入正数以及保留两位小数！',
             type: 'warning'
           })
+          row['numberSourceFee'] = this.beforeFee
         }
       }
     },
