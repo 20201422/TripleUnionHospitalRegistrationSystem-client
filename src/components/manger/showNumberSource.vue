@@ -1,6 +1,6 @@
 <template>
   <div class="main"></div>
-  <div class="st-part">
+  <div class="st-part" style = "display:flex">
     <el-select class="el-st" placeholder="选择科室" @change="getNumberSource" v-model="dept" clearable>
       <el-option v-for="option in deptList" :value="option">
         {{ option }}
@@ -36,7 +36,7 @@
         layout="total, sizes, prev, pager, next, jumper" :total="pagination.total" class="page">
       </el-pagination>
 
-      <el-dialog v-model="Visible" style="min-height: 300px;" width="50%" title="添加号源" append-to-body draggable="true">
+      <el-dialog :draggable=true v-model="Visible" style="min-height: 300px;" width="50%" title="添加号源" append-to-body>
         <el-text style="margin-left: 200px;">科室名称：</el-text>
         <el-select style="width: 205px;" @change="handleChange" v-model="deptname" clearable placeholder="选择科室">
           <el-option v-for="deptn in deptnameList" :value="deptn" :label="deptn" />
@@ -79,16 +79,14 @@ export default {
       deptList: [],
       typeList: [],
       dates: [],
-      pickerdate: "",
+      pickerdate:"",
       pickerdates: [],
       Visible: false,
       deptname: "",
       deptnameList: [],
       roomtype: "",
       rooms: ['普通门诊', '专家门诊', '特需门诊'],
-      num: 0,
       numberSourceFee: 20,
-      nums: [120, 300, 480, 600],
       selectdisabled: true,
       pickerdisabled: true,
       disabled: true,
@@ -102,8 +100,7 @@ export default {
   computed:{
     defaultDate() {
       const date = this.getFirstEnabledDate();
-      this.pickerdate = this.formatDate(date)
-      return this.formatDate(date);
+      return new Date(this.formatDate(date));
     },
   },
   methods: {
@@ -167,6 +164,7 @@ export default {
     handleChange() {
       if (this.deptname.length === 0 || this.deptname === "") {
         this.selectdisabled = true
+        this.pickerdisabled = true;
       }
       else {
         this.selectdisabled = false
@@ -181,7 +179,7 @@ export default {
         this.pickerdisabled = true;
       }
       else {
-        this.pickerdisabled = false;
+        this.pickerdisabled = false
         if (this.deptname.length > 0) {
           this.forbidDate()
         }
@@ -189,7 +187,7 @@ export default {
     },
 
     handleChange3() {
-      if (this.pickerdate === "") {
+      if (this.pickerdate === ""||this.pickerdate === null) {
         this.disabled = true
       }
       else {
@@ -226,7 +224,6 @@ export default {
     getFirstEnabledDate() {
       const date = new Date();
       while (this.disabledDate(date)) {
-        console.log(this.disabledDate(date))
         date.setDate(date.getDate() + 1);
       }
       return date;

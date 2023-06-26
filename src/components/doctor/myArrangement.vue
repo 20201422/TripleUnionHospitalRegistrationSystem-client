@@ -43,7 +43,7 @@
             </div>
         </div>
     </div>
-    <el-dialog v-model="detailVisible" style="min-height: 300px;" width="50%" title="排班详情" append-to-body draggable="true">
+    <el-dialog v-model="detailVisible" style="min-height: 300px;" width="50%" title="排班详情" append-to-body :draggable=true>
         <el-text size="large">{{ this.selectedArrangementInfo.numberSourceDate }}</el-text>&nbsp;&nbsp;
         <el-text size="large">{{ this.selectedArrangementInfo.amOrPm }}</el-text><br><br>
         <el-text size="large">医生：{{ this.selectedArrangementInfo.doctorName }}</el-text>&nbsp;&nbsp;

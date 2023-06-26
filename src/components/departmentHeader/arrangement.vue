@@ -69,7 +69,7 @@
             <doctorList></doctorList>
         </div>
     </div>
-    <el-dialog v-model="addVisible" style="min-height: 300px;" width="50%" title="添加排班" append-to-body draggable="true">
+    <el-dialog v-model="addVisible" style="min-height: 300px;" width="50%" title="添加排班" append-to-body :draggable=true>
         <el-text size="large">{{ this.selectedDate }}</el-text>&nbsp;&nbsp;
         <el-text size="large">{{ this.selectedAmOrPm }}</el-text><br><br>
         <el-text size="large">号源总数</el-text>&nbsp;&nbsp;
@@ -93,13 +93,13 @@
         <br><br>
         <el-text size="large">剩余号源数量 {{ remainNumberSource }}</el-text>
 
-        <div style="margin-left: 81%;margin-top: 10px;">
+        <div style="margin-left: 79%;margin-right: 2%;margin-top: 10px;" class="row">
             <el-button type="primary" @click="confirmAdd">确认</el-button>
             <el-button @click="cancel">取消</el-button>
         </div>
     </el-dialog>
 
-    <el-dialog v-model="detailVisible" style="min-height: 300px;" width="50%" title="排班详情" append-to-body draggable="true">
+    <el-dialog v-model="detailVisible" style="min-height: 300px;" width="50%" title="排班详情" append-to-body :draggable=true>
         <el-text size="large">{{ this.selectedArrangementInfo.numberSourceDate }}</el-text>&nbsp;&nbsp;
         <el-text size="large">{{ this.selectedArrangementInfo.amOrPm }}</el-text><br><br>
         <el-text size="large">医生：{{ this.selectedArrangementInfo.doctorName }}</el-text>&nbsp;&nbsp;
@@ -123,7 +123,7 @@
         </div>
     </el-dialog>
 
-    <el-dialog v-model="recordsVisible" style="min-height: 300px;" width="70%" title="排班记录" append-to-body draggable="true">
+    <el-dialog v-model="recordsVisible" style="min-height: 300px;" width="70%" title="排班记录" append-to-body :draggable=true>
         <el-scrollbar height="520px">
             <div class="scrollbar-flex-content">
                 <div v-for="dateInfo in beforeDate" class="arrangementtable">
@@ -504,42 +504,47 @@ export default {
 
                 var id = []
                 id = response.data.data  //号源id数组
-
-                var num = parseInt(this.numberSourceNum / 6)  //将所有号源数量均分到6个时段
+                var numberSourceId = ''
+                for (var i = 0; i < id.length; i++){
+                    numberSourceId+=id[i]+','
+                }
+                
+                console.log(id)
                 //平均分配算法 --- 将所有号源均分到每个时段
                 var count = this.numberSourceNum  //总号源数
                 var cores = id.length    //时间段数量
-                for (var idx = 0; idx < cores; idx++) {
-                    var min = parseInt(count * idx / cores);
-                    var max = parseInt(count * (idx + 1) / cores);
-                    var averageNum = 0
-                    for (var i = min; i < max; i++) {
-                        averageNum++
-                    }
-                    // console.log(id[idx]+":"+averageNum)
-                    this.$axios.get("/arrangement/add", {
-                        params: {
-                            doctorId: this.selectedDoctor,
-                            consultingRoomId: this.selectedConsultingRoom,
-                            numberSourceId: id[idx],
-                            number: averageNum
-                        }
-                    }).then(response => {
-
-                    }).catch(error => { console.log(error) })
-                }
-                // for (var i = 0; i < id.length; i++) {
+                // for (var idx = 0; idx < cores; idx++) {
+                //     var min = parseInt(count * idx / cores);
+                //     var max = parseInt(count * (idx + 1) / cores);
+                //     var averageNum = 0
+                //     for (var i = min; i < max; i++) {
+                //         averageNum++
+                //     }
+                //     // console.log(id[idx]+":"+averageNum)
                 //     this.$axios.get("/arrangement/add", {
                 //         params: {
                 //             doctorId: this.selectedDoctor,
                 //             consultingRoomId: this.selectedConsultingRoom,
-                //             numberSourceId: id[i],
-                //             number: num
+                //             numberSourceId: id[idx],
+                //             number: averageNum
                 //         }
                 //     }).then(response => {
 
                 //     }).catch(error => { console.log(error) })
                 // }
+
+                this.$axios.get("/arrangement/add", {
+                    params: {
+                        doctorId: this.selectedDoctor,
+                        consultingRoomId: this.selectedConsultingRoom,
+                        numberSourceId: numberSourceId,
+                        number: count,
+                    },
+                }).then(response => {
+
+                }).catch(error => { console.log(error) })
+
+
                 ElMessage({
                     message: '添加成功',
                     type: 'success',
