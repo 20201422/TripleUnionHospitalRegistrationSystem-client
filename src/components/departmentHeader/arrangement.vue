@@ -417,13 +417,15 @@ export default {
                     amOrPm: info.amOrPm,
                 }
             }).then(response => {
-                ElMessage({
-                    message: '删除成功',
-                    type: 'success',
-                })
-                location.reload()
-
-            }).catch(error => { });
+                this.$axios.get("/arrangement/findByDepartmentId/" + this.departmentId).then(response => {
+                    this.arrangementInfo = response.data.data
+                    this.arrangementKey++;
+                }).catch(error => { console.log(error) })
+            }).catch(error => { })
+            ElMessage({
+                message: '删除成功',
+                type: 'success',
+            })
         },
         openArrangmentInfo(info) {
             this.selectedArrangementInfo = info;
@@ -505,10 +507,10 @@ export default {
                 var id = []
                 id = response.data.data  //号源id数组
                 var numberSourceId = ''
-                for (var i = 0; i < id.length; i++){
-                    numberSourceId+=id[i]+','
+                for (var i = 0; i < id.length; i++) {
+                    numberSourceId += id[i] + ','
                 }
-                
+
                 console.log(id)
                 //平均分配算法 --- 将所有号源均分到每个时段
                 var count = this.numberSourceNum  //总号源数
@@ -541,17 +543,6 @@ export default {
                         number: count,
                     },
                 }).then(response => {
-
-                }).catch(error => { console.log(error) })
-
-
-                ElMessage({
-                    message: '添加成功',
-                    type: 'success',
-                })
-                this.addVisible = false
-
-                setTimeout(() => {
                     this.$axios.get("/numberSourceDetail/addNumberSourceDetail", {
                         params: {
                             doctorId: this.selectedDoctor,
@@ -561,9 +552,15 @@ export default {
                     }).then(response => {
 
                     }).catch(error => { })
-                }, 1000)
+
+                }).catch(error => { console.log(error) })
 
 
+                ElMessage({
+                    message: '添加成功',
+                    type: 'success',
+                })
+                this.addVisible = false
 
             }).catch(error => { console.log(error) })
 
