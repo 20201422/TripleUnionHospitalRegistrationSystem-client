@@ -1,6 +1,6 @@
 <template>
     <div style="margin-top: 12%;margin-left: 6%;">
-        <el-table :data="patientQueue" style="width: 85%" height="320"
+        <el-table :data="patientQueue" style="width: 85%" 
             :default-sort="{ prop: 'numberSourceDate', order: 'descending' }">
             <el-table-column prop="patientName" label="挂号人姓名" width="120" align="center" />
             <el-table-column prop="recordsName" label="就诊人姓名" width="120 " align="center" />

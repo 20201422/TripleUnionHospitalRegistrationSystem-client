@@ -3,6 +3,7 @@
         <div class="col-8">
             <div class="frame">
                 <el-button @click="recordsVisible = true">排班记录</el-button>
+                <hr>
                 <div style="margin-bottom: 10px ;clear: both;">
 
                 </div>
@@ -25,7 +26,11 @@
                                                 <template #reference>
                                                     <el-tag :key="info.doctorName" type='info' size="large"
                                                         class="arrangementTag">
-                                                        {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                        <div class="tag-top">
+                                                            {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                        </div>
+                                                        <el-text class="roomName" size="small">{{
+                                                            info.consultingRoomName.slice(3) }}</el-text>
                                                     </el-tag>
                                                 </template>
                                             </el-popconfirm>
@@ -45,7 +50,11 @@
                                                 <template #reference>
                                                     <el-tag :key="info.doctorName" type='info' size="large"
                                                         class="arrangementTag">
-                                                        {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                        <div class="tag-top">
+                                                            {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                        </div>
+                                                        <el-text class="roomName" size="small">{{
+                                                            info.consultingRoomName.slice(3) }}</el-text>
                                                     </el-tag>
                                                 </template>
                                             </el-popconfirm>
@@ -142,7 +151,10 @@
                                         @confirm="openArrangmentInfo(info)">
                                         <template #reference>
                                             <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
-                                                {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                <div class="tag-top">
+                                                    {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                </div>
+                                                <el-text class="roomName" size="small">{{ info.consultingRoomName.slice(3) }}</el-text>
                                             </el-tag>
                                         </template>
                                     </el-popconfirm>
@@ -158,7 +170,10 @@
                                         @confirm="openArrangmentInfo(info)">
                                         <template #reference>
                                             <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
-                                                {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                <div class="tag-top">
+                                                    {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                </div>
+                                                <el-text class="roomName" size="small">{{ info.consultingRoomName.slice(3) }}</el-text>
                                             </el-tag>
                                         </template>
                                     </el-popconfirm>
@@ -641,9 +656,17 @@ label {
 
 .arrangementTag {
     width: 96%;
+    height: 50px;
     margin-bottom: 3px;
     cursor: pointer;
     font-size: medium;
     color: #000;
+}
+
+.roomName {
+    margin-top: 30px;
+}
+.tag-top{
+    margin-bottom: 5px;
 }
 </style>
