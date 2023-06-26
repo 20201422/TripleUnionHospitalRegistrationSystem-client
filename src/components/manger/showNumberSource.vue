@@ -1,17 +1,17 @@
 <template>
   <div class="main"></div>
-  <div class="st-part" style = "display:flex">
-    <el-select class="el-st" placeholder="选择科室" @change="getNumberSource" v-model="dept" clearable>
+  <div class="st-part" style="display:flex">
+    <el-select class="el-st" placeholder="选择科室" @change="getNumberSource" v-model="dept" filterable clearable>
       <el-option v-for="option in deptList" :value="option">
         {{ option }}
       </el-option>
     </el-select>
-    <el-select class="el-st" placeholder="选择门诊类型" @change="getNumberSource" v-model="type" clearable>
+    <el-select class="el-st" placeholder="选择门诊类型" @change="getNumberSource" v-model="type" filterable>
       <el-option v-for="option in typeList" :value="option">
         {{ option }}
       </el-option>
     </el-select>
-    <el-select class="el-st" placeholder="选择日期" @change="getNumberSource" v-model="date" clearable>
+    <el-select class="el-st" placeholder="选择日期" @change="getNumberSource" v-model="date" filterable clearable>
       <el-option v-for="option in dates" :value="option">
         {{ option }}
       </el-option>
@@ -28,7 +28,12 @@
         <el-table-column prop="departmentName" label="科室名称" width="180" algin="center" />
         <el-table-column prop="consultingRoomType" label="诊室类型" width="180" algin="center" />
         <el-table-column prop="numberSourceDate" label="所属日期" width="180" algin="center" />
-        <el-table-column prop="numberSourceFee" label="费用" width="180" algin="center" />
+        <el-table-column prop="numberSourceFee" label="费用" width="180" algin="center">
+          <template #default="{ row }">
+            <el-input :min="20" v-model="row.numberSourceFee" @focus="initInput(row)"
+              @change="updateData(row)"></el-input>
+          </template>
+        </el-table-column>
         <el-table-column prop="numberSourceNumber" label="号源数量" width="180" algin="center" />
       </el-table>
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -38,13 +43,14 @@
 
       <el-dialog :draggable=true v-model="Visible" style="min-height: 300px;" width="50%" title="添加号源" append-to-body>
         <el-text style="margin-left: 200px;">科室名称：</el-text>
-        <el-select style="width: 205px;" @change="handleChange" v-model="deptname" clearable placeholder="选择科室">
+        <el-select style="width: 205px;" @change="handleChange" v-model="deptname" filterable clearable
+          placeholder="选择科室">
           <el-option v-for="deptn in deptnameList" :value="deptn" :label="deptn" />
         </el-select>
         <br><br>
         <el-text style="margin-left: 200px;">门诊类型：</el-text>
-        <el-select style="width: 205px;" @change="handleChange2" v-model="roomtype" :disabled="selectdisabled" clearable
-          placeholder="选择门诊类型">
+        <el-select style="width: 205px;" @change="handleChange2" v-model="roomtype" :disabled="selectdisabled" filterable
+          clearable placeholder="选择门诊类型">
           <el-option v-for="room in rooms" :value="room" />
         </el-select>
         <br><br>
@@ -66,7 +72,13 @@
 
 <script>
 import { ElMessage } from 'element-plus';
+import { ElTable, ElInput } from 'element-plus';
 export default {
+
+  components: {
+    ElTable,
+    ElInput,
+  },
   data() {
     return {
       pagination: {
@@ -80,7 +92,7 @@ export default {
       deptList: [],
       typeList: [],
       dates: [],
-      pickerdate:"",
+      pickerdate: "",
       pickerdates: [],
       Visible: false,
       deptname: "",
@@ -91,6 +103,7 @@ export default {
       selectdisabled: true,
       pickerdisabled: true,
       disabled: true,
+      beforeFee: 0
     };
   },
   created() {
@@ -98,7 +111,7 @@ export default {
     this.init()
     this.initDepartment()
   },
-  computed:{
+  computed: {
     defaultDate() {
       const date = this.getFirstEnabledDate();
       return new Date(this.formatDate(date));
@@ -188,7 +201,7 @@ export default {
     },
 
     handleChange3() {
-      if (this.pickerdate === ""||this.pickerdate === null) {
+      if (this.pickerdate === "" || this.pickerdate === null) {
         this.disabled = true
       }
       else {
@@ -214,7 +227,7 @@ export default {
       const today = new Date();
       today.setDate(today.getDate() + 7);
       const dateObjects = this.pickerdates.map(dateString => new Date(dateString));
-      return date <= today||dateObjects.some(disabledDate => {
+      return date <= today || dateObjects.some(disabledDate => {
         return this.formatDate(disabledDate) === this.formatDate(date);
       });
     },
@@ -250,6 +263,31 @@ export default {
       this.getNumberSource();
     },
 
+    initInput(row) {
+      this.beforeFee = row['numberSourceFee']
+    },
+
+    updateData(row) {
+      if (row['numberSourceFee'] < 20) {
+        row['numberSourceFee'] = this.beforeFee
+      }
+      else {
+        this.$axios.get('/numberSource/updateFee', {
+          params: {
+            departmentName: row['departmentName'],
+            consultingRoomType: row['consultingRoomType'],
+            numberSourceDate: row['numberSourceDate'],
+            numberSourceFee: row['numberSourceFee']
+          }
+        }).then(res => {
+          ElMessage({
+            message: res.data.data,
+            type: 'warning'
+          })
+        })
+      }
+    },
+
     sumbit() {
       this.$axios.get('/numberSource/addNumberSource', {
         params: {
@@ -261,7 +299,7 @@ export default {
       }).then(res => {
         ElMessage({
           message: res.data.data,
-          type:'warning'
+          type: 'warning'
         })
         this.cancel();
         this.getNumberSource();

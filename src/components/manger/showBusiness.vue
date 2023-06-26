@@ -1,22 +1,22 @@
 <template>
   <div class="main"></div>
   <div class="st-part">
-    <el-select class="el-st" placeholder="选择科室" @change="getBusiness" v-model="dept" clearable>
+    <el-select class="el-st" placeholder="选择科室" @change="getBusiness" v-model="dept" filterable clearable>
       <el-option v-for="option in deptList" :value="option">
         {{ option }}
       </el-option>
     </el-select>
-    <el-select class="el-st" placeholder="选择开始时段" @change="getBusiness" v-model="begin" clearable>
+    <el-select class="el-st" placeholder="选择开始时段" @change="getBusiness" v-model="begin" filterable clearable>
       <el-option v-for="option in beginList" :value="option">
         {{ option }}
       </el-option>
     </el-select>
-    <el-select class="el-st" placeholder="选择结束时段" @change="getBusiness" v-model="end" clearable>
+    <el-select class="el-st" placeholder="选择结束时段" @change="getBusiness" v-model="end" filterable clearable>
       <el-option v-for="option in endList" :value="option">
         {{ option }}
       </el-option>
     </el-select>
-    <el-select class="el-st" placeholder="选择门诊类型" @change="getBusiness" v-model="type" clearable>
+    <el-select class="el-st" placeholder="选择门诊类型" @change="getBusiness" v-model="type" filterable clearable>
       <el-option v-for="option in typeList" :value="option">
         {{ option }}
       </el-option>
@@ -34,7 +34,11 @@
         <el-table-column prop="timeFrameBeginTime" label="时段开始时间" width="180" algin="center" />
         <el-table-column prop="timeFrameEndTime" label="时段结束时间" width="180" algin="center" />
         <el-table-column prop="consultingRoom" label="门诊类型" width="180" algin="center" />
-        <el-table-column prop="numberSourceNumber" label="号源数量" width="180" algin="center" />
+        <el-table-column prop="numberSourceNumber" label="号源数量" width="180" algin="center" :editable="true">
+          <template #default="{ row }">
+            <el-input v-model="row.numberSourceNumber" @focus="initInput(row)" @change="updateData(row)"></el-input>
+          </template>
+        </el-table-column>
       </el-table>
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
         :current-page="pagination.current" :page-sizes="[6, 10]" :page-size="pagination.size"
@@ -43,18 +47,18 @@
 
       <el-dialog :draggable=true v-model="Visible" style="min-height: 300px;" width="50%" title="添加业务" append-to-body>
         <el-text style="margin-left: 200px;">科室名称：</el-text>
-        <el-select @change="handleChange" v-model="deptname" clearable placeholder="选择科室">
+        <el-select @change="handleChange" v-model="deptname" filterable clearable placeholder="选择科室">
           <el-option v-for="deptn in deptnameList" :key="deptn.departmentId" :value="deptn.departmentId"
             :label="deptn.departmentName" />
         </el-select>
         <br><br>
         <el-text style="margin-left: 200px;">门诊类型：</el-text>
-        <el-select @change="handleChange" v-model="roomtype" clearable placeholder="门诊类型">
+        <el-select @change="handleChange" v-model="roomtype" filterable clearable placeholder="门诊类型">
           <el-option v-for="room in rooms" :value="room" />
         </el-select>
         <br><br>
         <el-text style="margin-left: 200px;">号源数量：</el-text>
-        <el-input-number style="width: 205px;" v-model="num" />
+        <el-input-number :integer=true style="width: 205px;" v-model="num" :step="1" />
         <div style="margin-left: 81%;margin-top: 10px;">
           <el-button type="primary" @click="sumbit" :disabled="disabled">确认</el-button>
           <el-button @click="cancel">取消</el-button>
@@ -66,7 +70,12 @@
 
 <script>
 import { ElMessage } from 'element-plus';
+import { ElTable, ElInput } from 'element-plus';
 export default {
+  components: {
+    ElTable,
+    ElInput,
+  },
   data() {
     return {
       pagination: {
@@ -88,8 +97,11 @@ export default {
       roomtype: "",
       rooms: ['普通门诊', '专家门诊', '特需门诊'],
       num: 120,
-      nums: [120, 300, 480, 600],
+      beforeNum: 0,
       disabled: true,
+      inputBeforeDate: 0,
+      inputMin: 0,
+      inputMax: 0,
     };
   },
   created() {
@@ -133,6 +145,7 @@ export default {
 
     addBusiness() {
       this.Visible = true
+      this.beforeNum = this.num
     },
 
     getBusiness() {
@@ -175,25 +188,96 @@ export default {
       }
     },
 
-    sumbit() {
-      this.$axios.get('/business/addBusiness', {
+    initInput(row) {
+      this.inputBeforeDate = row['numberSourceNumber']
+      this.$axios.get('/arrangement/maxAndmin',{
         params: {
-          departmentId: this.deptname,
-          consultingRoomType: this.roomtype,
-          numberSourceNumber: this.num
+          departmentName:row['departmentName'],
+          timeFrameBeginTime:row['timeFrameBeginTime'],
+          timeFrameEndTime:row['timeFrameEndTime'],
+          consultingRoomType:row['consultingRoom']
         }
       }).then(res => {
-        ElMessage({
-          message: res.data.data,
-          type:'warning'
+          let datas = res.data.data
+          if(datas!==null){
+            this.inputMax = datas.max
+            this.inputMin = datas.min
+          }
+          else{
+            this.inputMax = 0
+            this.inputMin = 0
+          }
+          console.log(this.inputMax)
+          console.log(this.inputMin)
         })
-        this.cancel()
-        this.getBusiness();
-        this.init();
-        this.initDepartment();
-      }).catch(error => {
-        this.$message = error.message;
-      })
+    },
+
+    updateData(row) {
+      if (this.isPositiveInt(row['numberSourceNumber'])) {
+        if(row['numberSourceNumber'] < this.inputMax){
+          ElMessage({
+            message: '请输入大于'+this.inputMax+'的正整数！',
+            type: 'warning'
+          })
+          row['numberSourceNumber'] = this.inputBeforeDate
+        }
+        else{
+          this.$axios.get('/business/updateNumber',{
+            params:{
+              numberSourceNumber:row['numberSourceNumber'],
+              departmentName:row['departmentName'],
+              timeFrameBeginTime:row['timeFrameBeginTime'],
+              timeFrameEndTime:row['timeFrameEndTime'],
+              consultingRoomType:row['consultingRoom']
+            }
+          }).then(res => {
+            ElMessage({
+            message: res.data.data,
+            type: 'warning'
+          })
+        })
+        }
+      }
+      else {
+        ElMessage({
+          message: '请输入正整数！',
+          type: 'warning'
+        })
+        row['numberSourceNumber'] = this.inputBeforeDate
+      }
+    },
+
+    isPositiveInt(num) {
+      return /^[1-9]\d*$/.test(num);
+    },
+
+    sumbit() {
+      if (this.isPositiveInt(this.num)) {
+        this.$axios.get('/business/addBusiness', {
+          params: {
+            departmentId: this.deptname,
+            consultingRoomType: this.roomtype,
+            numberSourceNumber: this.num
+          }
+        }).then(res => {
+          ElMessage({
+            message: res.data.data,
+            type: 'warning'
+          })
+          this.cancel()
+          this.getBusiness();
+          this.init();
+          this.initDepartment();
+        }).catch(error => {
+          this.$message = error.message;
+        })
+      }
+      else {
+        ElMessage({
+          message: '请输入正整数！',
+          type: 'warning'
+        })
+      }
     },
 
     cancel() {
