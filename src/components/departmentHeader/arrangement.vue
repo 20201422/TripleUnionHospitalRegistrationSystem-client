@@ -3,6 +3,7 @@
         <div class="col-8">
             <div class="frame">
                 <el-button @click="recordsVisible = true">排班记录</el-button>
+                <hr>
                 <div style="margin-bottom: 10px ;clear: both;">
 
                 </div>
@@ -25,7 +26,11 @@
                                                 <template #reference>
                                                     <el-tag :key="info.doctorName" type='info' size="large"
                                                         class="arrangementTag">
-                                                        {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                        <div class="tag-top">
+                                                            {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                        </div>
+                                                        <el-text class="roomName" size="small">{{
+                                                            info.consultingRoomName.slice(3) }}</el-text>
                                                     </el-tag>
                                                 </template>
                                             </el-popconfirm>
@@ -45,7 +50,11 @@
                                                 <template #reference>
                                                     <el-tag :key="info.doctorName" type='info' size="large"
                                                         class="arrangementTag">
-                                                        {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                        <div class="tag-top">
+                                                            {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                        </div>
+                                                        <el-text class="roomName" size="small">{{
+                                                            info.consultingRoomName.slice(3) }}</el-text>
                                                     </el-tag>
                                                 </template>
                                             </el-popconfirm>
@@ -142,7 +151,10 @@
                                         @confirm="openArrangmentInfo(info)">
                                         <template #reference>
                                             <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
-                                                {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                <div class="tag-top">
+                                                    {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                </div>
+                                                <el-text class="roomName" size="small">{{ info.consultingRoomName.slice(3) }}</el-text>
                                             </el-tag>
                                         </template>
                                     </el-popconfirm>
@@ -158,7 +170,10 @@
                                         @confirm="openArrangmentInfo(info)">
                                         <template #reference>
                                             <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
-                                                {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                <div class="tag-top">
+                                                    {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                </div>
+                                                <el-text class="roomName" size="small">{{ info.consultingRoomName.slice(3) }}</el-text>
                                             </el-tag>
                                         </template>
                                     </el-popconfirm>
@@ -417,13 +432,15 @@ export default {
                     amOrPm: info.amOrPm,
                 }
             }).then(response => {
-                ElMessage({
-                    message: '删除成功',
-                    type: 'success',
-                })
-                location.reload()
-
-            }).catch(error => { });
+                this.$axios.get("/arrangement/findByDepartmentId/" + this.departmentId).then(response => {
+                    this.arrangementInfo = response.data.data
+                    this.arrangementKey++;
+                }).catch(error => { console.log(error) })
+            }).catch(error => { })
+            ElMessage({
+                message: '删除成功',
+                type: 'success',
+            })
         },
         openArrangmentInfo(info) {
             this.selectedArrangementInfo = info;
@@ -469,103 +486,116 @@ export default {
 
         },
         confirmAdd() {
+            var r = /^\+?[1-9][0-9]*$/
             if (this.selectedDoctor == '' || this.selectedConsultingRoom == '') {
                 ElMessage({
                     message: '添加失败，数据不能为空！',
                     type: 'warning',
                 })
                 return;
-            }
-            this.$axios.get("/arrangement/getNumberSourceByDate", {
-                params: {
-                    date: this.selectedDate,
-                    amOrPm: this.selectedAmOrPm,
-                    consultingRoomType: this.selectedConsultingRoomType
-                }
-            }).then(response => {
-                this.$axios.get("/arrangement/addInfo", {
+            } else if (!r.test(this.numberSourceNum)) {
+                ElMessage({
+                    message: '添加失败，号源数量不是整数！',
+                    type: 'warning',
+                })
+                return;
+            } else {
+                this.$axios.get("/arrangement/checkDoctor", {   //检查该医生是否排班
                     params: {
                         doctorId: this.selectedDoctor,
-                        consultingRoomId: this.selectedConsultingRoom,
-                        departmentId: this.departmentId,
                         numberSourceDate: this.selectedDate,
-                        amOrPm: this.selectedAmOrPm,
-                        number: this.numberSourceNum,
-                        doctorLevel: this.selectedDoctorInfo.doctorLevel,
-
+                        amOrPm: this.selectedAmOrPm
                     }
                 }).then(response => {
-                    this.$axios.get("/arrangement/findByDepartmentId/" + this.departmentId).then(response => {
-                        this.arrangementInfo = response.data.data
-                        this.arrangementKey++;
-                    }).catch(error => { console.log(error) })
-
-                }).catch(error => console.log(error))
-
-                var id = []
-                id = response.data.data  //号源id数组
-                var numberSourceId = ''
-                for (var i = 0; i < id.length; i++){
-                    numberSourceId+=id[i]+','
-                }
-                
-                console.log(id)
-                //平均分配算法 --- 将所有号源均分到每个时段
-                var count = this.numberSourceNum  //总号源数
-                var cores = id.length    //时间段数量
-                // for (var idx = 0; idx < cores; idx++) {
-                //     var min = parseInt(count * idx / cores);
-                //     var max = parseInt(count * (idx + 1) / cores);
-                //     var averageNum = 0
-                //     for (var i = min; i < max; i++) {
-                //         averageNum++
-                //     }
-                //     // console.log(id[idx]+":"+averageNum)
-                //     this.$axios.get("/arrangement/add", {
-                //         params: {
-                //             doctorId: this.selectedDoctor,
-                //             consultingRoomId: this.selectedConsultingRoom,
-                //             numberSourceId: id[idx],
-                //             number: averageNum
-                //         }
-                //     }).then(response => {
-
-                //     }).catch(error => { console.log(error) })
-                // }
-
-                this.$axios.get("/arrangement/add", {
-                    params: {
-                        doctorId: this.selectedDoctor,
-                        consultingRoomId: this.selectedConsultingRoom,
-                        numberSourceId: numberSourceId,
-                        number: count,
-                    },
-                }).then(response => {
-
-                }).catch(error => { console.log(error) })
-
-
-                ElMessage({
-                    message: '添加成功',
-                    type: 'success',
-                })
-                this.addVisible = false
-
-                setTimeout(() => {
-                    this.$axios.get("/numberSourceDetail/addNumberSourceDetail", {
+                    var doctorNum = response.data.data
+                    this.$axios.get("/arrangement/checkConsultingRoom", { //检查该诊室是否排班
                         params: {
-                            doctorId: this.selectedDoctor,
+                            consultingRoomId: this.selectedConsultingRoom,
                             numberSourceDate: this.selectedDate,
                             amOrPm: this.selectedAmOrPm
                         }
                     }).then(response => {
+                        var consultingRoomNum = response.data.data
+                        if (doctorNum > 0) {
+                            ElMessage({
+                                message: '添加失败，该医生已排班',
+                                type: 'warning',
+                            })
+                            return;
+                        } else if (consultingRoomNum > 0) {
+                            ElMessage({
+                                message: '添加失败，该诊室已排班',
+                                type: 'warning',
+                            })
+                            return;
+                        } else {
+                            this.$axios.get("/arrangement/getNumberSourceByDate", {
+                                params: {
+                                    date: this.selectedDate,
+                                    amOrPm: this.selectedAmOrPm,
+                                    consultingRoomType: this.selectedConsultingRoomType
+                                }
+                            }).then(response => {
+                                this.$axios.get("/arrangement/addInfo", {
+                                    params: {
+                                        doctorId: this.selectedDoctor,
+                                        consultingRoomId: this.selectedConsultingRoom,
+                                        departmentId: this.departmentId,
+                                        numberSourceDate: this.selectedDate,
+                                        amOrPm: this.selectedAmOrPm,
+                                        number: this.numberSourceNum,
+                                        doctorLevel: this.selectedDoctorInfo.doctorLevel,
 
+                                    }
+                                }).then(response => {
+                                    this.$axios.get("/arrangement/findByDepartmentId/" + this.departmentId).then(response => {
+                                        this.arrangementInfo = response.data.data
+                                        this.arrangementKey++;
+                                    }).catch(error => { console.log(error) })
+
+                                }).catch(error => console.log(error))
+
+                                var id = []
+                                id = response.data.data  //号源id数组
+                                var numberSourceId = ''
+                                for (var i = 0; i < id.length; i++) {
+                                    numberSourceId += id[i] + ','
+                                }
+
+                                var count = this.numberSourceNum  //总号源数
+                                this.$axios.get("/arrangement/add", {
+                                    params: {
+                                        doctorId: this.selectedDoctor,
+                                        consultingRoomId: this.selectedConsultingRoom,
+                                        numberSourceId: numberSourceId,
+                                        number: count,
+                                    },
+                                }).then(response => {
+                                    this.$axios.get("/numberSourceDetail/addNumberSourceDetail", {
+                                        params: {
+                                            doctorId: this.selectedDoctor,
+                                            numberSourceDate: this.selectedDate,
+                                            amOrPm: this.selectedAmOrPm
+                                        }
+                                    }).then(response => {
+
+                                    }).catch(error => { })
+
+                                }).catch(error => { console.log(error) })
+
+
+                                ElMessage({
+                                    message: '添加成功',
+                                    type: 'success',
+                                })
+                                this.addVisible = false
+
+                            }).catch(error => { console.log(error) })
+                        }
                     }).catch(error => { })
-                }, 1000)
 
-
-
-            }).catch(error => { console.log(error) })
+                }).catch(error => { });
+            }
 
         },
         cancel() {
@@ -626,9 +656,17 @@ label {
 
 .arrangementTag {
     width: 96%;
+    height: 50px;
     margin-bottom: 3px;
     cursor: pointer;
     font-size: medium;
     color: #000;
+}
+
+.roomName {
+    margin-top: 30px;
+}
+.tag-top{
+    margin-bottom: 5px;
 }
 </style>

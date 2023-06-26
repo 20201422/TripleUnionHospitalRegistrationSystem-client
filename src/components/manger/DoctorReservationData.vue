@@ -1,16 +1,16 @@
 <template>
   <div class="charts"></div>
-  <el-select class="el-st" @change="getData(dept, week, doctorName)" v-model="week" clearable>
+  <el-select class="el-st" @change="getData(dept, week, doctorName)" v-model="week" filterable clearable>
     <el-option v-for="option in weekList" :value="option">
       {{ option }}
     </el-option>
   </el-select>
-  <el-select class="el-st" @change="getData(dept, week, doctorName)" v-model="dept" clearable>
+  <el-select class="el-st" @change="getData(dept, week, doctorName)" v-model="dept" filterable clearable>
     <el-option v-for="option in deptList" :value="option">
       {{ option }}
     </el-option>
   </el-select>
-  <el-select class="el-st" @change="getData(dept, week, doctorName)" v-model="doctorName" clearable>
+  <el-select class="el-st" @change="getData(dept, week, doctorName)" v-model="doctorName" filterable clearable>
     <el-option v-for="option in dctList" :value="option">
       {{ option }}
     </el-option>
