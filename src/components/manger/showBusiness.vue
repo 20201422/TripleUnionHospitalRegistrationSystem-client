@@ -207,8 +207,6 @@ export default {
             this.inputMax = 0
             this.inputMin = 0
           }
-          console.log(this.inputMax)
-          console.log(this.inputMin)
         })
     },
 
