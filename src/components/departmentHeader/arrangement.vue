@@ -644,7 +644,7 @@ export default {
         confirmLook() {
             if (this.updateDate === this.selectedArrangementInfo.numberSourceDate
                 && this.updateAmOrPm === this.selectedArrangementInfo.amOrPm
-                && this.updateConsultingRoom === this.selectedArrangementInfo.consultingRoomName) {
+                && this.updateConsultingRoom === this.selectedArrangementInfo.consultingRoomId) {
                 this.detailVisible = false
             }
             else {
