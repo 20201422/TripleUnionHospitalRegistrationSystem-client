@@ -23,15 +23,19 @@
 export default {
     data() {
         return {
-            departmentId: '1002',
+            departmentId: '',
             doctorList: [],
 
         }
     },
     created() {
-        this.$axios.get("/doctor/doctors/" + this.departmentId).then(response => {
-            this.doctorList = response.data.data
-        }).catch(error => { console.log(error) });
+        this.$axios.get("/arrangement/findDepartmentIdByDoctorId/" + this.$store.state.userId).then(response => {
+            this.departmentId = response.data.data
+            this.$axios.get("/doctor/doctors/" + this.departmentId).then(response => {
+                this.doctorList = response.data.data
+            }).catch(error => { console.log(error) });
+        }).catch(error => { })
+
     },
     methods: {
 
@@ -50,7 +54,7 @@ export default {
 
 .cardItem {
     margin-top: 12px;
-    
+
 }
 
 .content {}
