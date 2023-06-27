@@ -8,11 +8,11 @@
         }}你好</label>
         <el-menu-item index="1">
           <router-link to='/departmentHeaderMain/introduction' class="navs"
-            :class='{ routerLinkActive }'>科室信息</router-link>
+            :class="{ 'router-link-active': $route.path === '/departmentHeaderMain/introduction' }">科室信息</router-link>
         </el-menu-item>
         <el-menu-item index="2">
           <router-link to='/departmentHeaderMain/arrangement' class="navs"
-            :class='{ routerLinkActive }'>排班管理</router-link>
+            :class="{ 'router-link-active': $route.path === '/departmentHeaderMain/arrangement' }">排班管理</router-link>
         </el-menu-item>
         <!-- <el-menu-item index="3">
                     <router-link to='/departmentHeaderMain/changeshiftManage' class="navs">调班管理</router-link>
