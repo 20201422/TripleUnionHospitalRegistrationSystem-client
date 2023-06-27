@@ -109,10 +109,20 @@
     </el-dialog>
 
     <el-dialog v-model="detailVisible" style="min-height: 300px;" width="50%" title="排班详情" append-to-body :draggable=true>
-        <el-text size="large">{{ this.selectedArrangementInfo.numberSourceDate }}</el-text>&nbsp;&nbsp;
-        <el-text size="large">{{ this.selectedArrangementInfo.amOrPm }}</el-text><br><br>
-        <el-text size="large">医生：{{ this.selectedArrangementInfo.doctorName }}</el-text>&nbsp;&nbsp;
-        <el-text size="large">诊室：{{ this.selectedArrangementInfo.consultingRoomName }}</el-text><br><br>
+        <!-- <el-text size="large">{{ this.selectedArrangementInfo.numberSourceDate }}</el-text>&nbsp;&nbsp; -->
+        <!-- <el-text size="large">{{ this.selectedArrangementInfo.amOrPm }}</el-text><br><br> -->
+        <el-date-picker style="width: 205px;" v-model="updateDate" format="YYYY-MM-DD" value-format="YYYY-MM-DD"
+            type="datetime" />&nbsp;&nbsp;
+        <el-select v-model="updateAmOrPm">
+            <el-option label="上午" value="上午" />
+            <el-option label="下午" value="下午" />
+        </el-select><br><br>
+        <el-text size="large">医生：{{ this.selectedArrangementInfo.doctorName }}</el-text>
+        <!-- <el-text size="large" style="margin-left: 10%;">诊室：{{ this.selectedArrangementInfo.consultingRoomName }}</el-text><br><br> -->
+        <span style="margin-left: 11%;">诊室：</span><el-select v-model="updateConsultingRoom" clearable placeholder="选择诊室">
+            <el-option v-for="room in consultingRooms" :key="room.consultingRoomId" :label="room.consultingRoomName"
+                :value="room.consultingRoomId" />
+        </el-select><br><br>
         <el-text size="large">号源数量</el-text><br>
         <div v-if="selectedArrangementInfo.amOrPm == '上午'">
             <el-text size="large">&nbsp; 8:00 ~ &nbsp; 8:30 &nbsp; {{ selectedDoctorInfoNum[0] }}</el-text><br>
@@ -130,6 +140,21 @@
             <el-text size="large"> 16:00 ~ 16:30 &nbsp; {{ selectedDoctorInfoNum[4] }}</el-text><br>
             <el-text size="large"> 16:30 ~ 17:00 &nbsp; {{ selectedDoctorInfoNum[5] }}</el-text><br>
         </div>
+        <div style="display: flex;justify-content: flex-end;margin-top: 10px;margin-right: 2%;" class="row">
+            <el-button type="primary" @click="confirmLook">确认</el-button>
+            <el-button @click="cancelLook">取消</el-button>
+        </div>
+    </el-dialog>
+    <el-dialog v-model="comfirmUpdateVisible" title="调班" width="30%">
+        <span>确认调班？</span>
+        <template #footer>
+            <span class="dialog-footer">
+                <el-button @click="comfirmUpdateVisible = false">取消</el-button>
+                <el-button type="primary" @click="confirmUpdate">
+                    确认
+                </el-button>
+            </span>
+        </template>
     </el-dialog>
 
     <el-dialog v-model="recordsVisible" style="min-height: 300px;" width="70%" title="排班记录" append-to-body :draggable=true>
@@ -154,7 +179,8 @@
                                                 <div class="tag-top">
                                                     {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
                                                 </div>
-                                                <el-text class="roomName" size="small">{{ info.consultingRoomName.slice(3) }}</el-text>
+                                                <el-text class="roomName" size="small">{{ info.consultingRoomName.slice(3)
+                                                }}</el-text>
                                             </el-tag>
                                         </template>
                                     </el-popconfirm>
@@ -173,7 +199,8 @@
                                                 <div class="tag-top">
                                                     {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
                                                 </div>
-                                                <el-text class="roomName" size="small">{{ info.consultingRoomName.slice(3) }}</el-text>
+                                                <el-text class="roomName" size="small">{{ info.consultingRoomName.slice(3)
+                                                }}</el-text>
                                             </el-tag>
                                         </template>
                                     </el-popconfirm>
@@ -209,11 +236,14 @@ export default {
             detailVisible: false,
             recordsVisible: false,
             selectedDate: '',
+            updateDate: '',
             selectedAmOrPm: '',
+            updateAmOrPm: '',
             selectedDoctor: '',
             selectedDoctorInfo: '',
             selectedDoctorInfoNum: [],//查看排班的每个时段的号源数量
             selectedConsultingRoom: '',
+            updateConsultingRoom: '',
             selectedConsultingRoomType: '',
             selectedArrangementInfo: {},  //用于查看排班详情数据渲染
             doctors: [],
@@ -224,6 +254,7 @@ export default {
             allNumberSource2: 0, //特需门诊号源数量
             allNumberSource3: 0, //普通门诊号源数量
             arrangementKey: 0,   //用于界面刷新
+            comfirmUpdateVisible: false,
 
             button_color2: Global_color.button_color,
         }
@@ -423,7 +454,6 @@ export default {
 
         },
         deleteArrangment(info) {
-            console.log(info)
             this.$axios.get("/arrangement/del", {
                 params: {
                     doctorId: info.doctorId,
@@ -443,8 +473,19 @@ export default {
             })
         },
         openArrangmentInfo(info) {
+            this.$axios.get("/consultingRoom/rooms/" + this.departmentId).then(response => {
+                this.consultingRooms = response.data.data;
+            }).catch(error => {
+                console.log(error);
+            });
             this.selectedArrangementInfo = info;
             this.detailVisible = true;
+            this.updateDate = this.selectedArrangementInfo.numberSourceDate
+            this.updateAmOrPm = this.selectedArrangementInfo.amOrPm
+            this.updateConsultingRoom = this.selectedArrangementInfo.consultingRoomId;
+
+            this.updateDateKey++
+            this.updateAmOrPmKey++
             var count = info.number  //总号源数
             var cores = 6    //时间段数量
             for (var idx = 0; idx < cores; idx++) {
@@ -533,7 +574,8 @@ export default {
                                 params: {
                                     date: this.selectedDate,
                                     amOrPm: this.selectedAmOrPm,
-                                    consultingRoomType: this.selectedConsultingRoomType
+                                    consultingRoomType: this.selectedConsultingRoomType,
+                                    departmentId: this.departmentId
                                 }
                             }).then(response => {
                                 this.$axios.get("/arrangement/addInfo", {    //添加排班明细
@@ -560,7 +602,7 @@ export default {
                                 id = response.data.data  //号源id数组
                                 var numberSourceId = ''
                                 for (var i = 0; i < id.length; i++) {  //号源id拼接，因为不会传数组
-                                    numberSourceId += id[i] + ','      
+                                    numberSourceId += id[i] + ','
                                 }
 
                                 var count = this.numberSourceNum  //总号源数
@@ -599,8 +641,107 @@ export default {
             }
 
         },
+        confirmLook() {
+            if (this.updateDate === this.selectedArrangementInfo.numberSourceDate
+                && this.updateAmOrPm === this.selectedArrangementInfo.amOrPm
+                && this.updateConsultingRoom === this.selectedArrangementInfo.consultingRoomName) {
+                this.detailVisible = false
+            }
+            else {
+                this.comfirmUpdateVisible = true
+            }
+        },
+        confirmUpdate() {
+            var consultingRoomType;
+            this.$axios.get("/doctor/findById/" + this.selectedArrangementInfo.doctorId).then(response => {
+                let data = response.data.data
+
+                if (data.doctorLevel == '主任医师') {
+                    consultingRoomType = '专家门诊'
+                }
+                if (data.doctorLevel == '主治医师') {
+                    consultingRoomType = '特需门诊'
+                }
+                if (data.doctorLevel == '医生') {
+                    consultingRoomType = '普通门诊'
+                }
+                // this.$axios.get("/arrangement/getRemainNumber", {
+                //     params: {
+                //         doctorLevel: data.doctorLevel,
+                //         consultingRoomType: consultingRoomType,
+                //         date: this.updateDate,
+                //         amOrPm: this.updateAmOrPm,
+                //         departmentId: this.departmentId
+                //     }
+                // }).then(response => {
+                //     this.remainNumberSource = response.data.data
+                // }).catch(error => { console.log(error) })
+                this.$axios.get("/arrangement/getNumberSourceByDate", {   //通过日期和门诊类型得到号源id数组
+                    params: {
+                        date: this.updateDate,
+                        amOrPm: this.updateAmOrPm,
+                        consultingRoomType: consultingRoomType,
+                        departmentId: this.departmentId
+                    }
+                }).then(response => {
+                    var id = []
+                    id = response.data.data  //号源id数组
+                    var NewNumberSourceId = ''
+                    for (var i = 0; i < id.length; i++) {  //号源id拼接，因为不会传数组
+                        NewNumberSourceId += id[i] + ','
+                    }
+
+                    this.$axios.get("/arrangement/updateArrangement", {
+                        params: {
+                            doctorId: this.selectedArrangementInfo.doctorId,
+                            consultingRoomId: this.selectedArrangementInfo.consultingRoomId,
+                            numberSourceDate: this.selectedArrangementInfo.numberSourceDate,
+                            amOrPm: this.selectedArrangementInfo.amOrPm,
+                            NewConsultingRoomId: this.updateConsultingRoom,
+                            newNumberSourceId: NewNumberSourceId,
+                            number: this.selectedArrangementInfo.number,
+                            departmentId: this.departmentId,
+                            newNumberSourceDate: this.updateDate,
+                            newAmOrPm: this.updateAmOrPm,
+                            consultingRoomType: consultingRoomType
+                        }
+                    }).then(response => {
+                        var message = response.data.data
+                        if (message == 1) {
+                            ElMessage({
+                                message: '调班成功',
+                                type: 'success',
+                            })
+                        }else if(message ==-1){
+                            ElMessage({
+                                message: '调班失败，目标日期号源不足',
+                                type: 'warning',
+                            })
+                        }else{
+                            ElMessage({
+                                message: '调班失败，调班日期不在合理范围内',
+                                type: 'warning',
+                            })
+                        }
+
+                        this.$axios.get("/arrangement/findByDepartmentId/" + this.departmentId).then(response => {
+                            this.arrangementInfo = response.data.data
+                            this.arrangementKey++;    //和v-for绑定，用于更新
+                            this.comfirmUpdateVisible = false
+                            this.detailVisible = false
+                        }).catch(error => { console.log(error) })
+                    }).catch(error => { });
+                }).catch(error => { })
+
+            }).catch(error => { console.log(error) })
+
+
+        },
         cancel() {
             this.addVisible = false
+        },
+        cancelLook() {
+            this.detailVisible = false
         },
     },
 
@@ -667,7 +808,8 @@ label {
 .roomName {
     margin-top: 30px;
 }
-.tag-top{
+
+.tag-top {
     margin-bottom: 5px;
 }
 </style>
