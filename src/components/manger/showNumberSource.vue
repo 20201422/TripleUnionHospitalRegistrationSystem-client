@@ -6,7 +6,7 @@
         {{ option }}
       </el-option>
     </el-select>
-    <el-select class="el-st" placeholder="选择门诊类型" @change="getNumberSource" v-model="type" filterable>
+    <el-select class="el-st" placeholder="选择门诊类型" @change="getNumberSource" v-model="type" filterable clearable>
       <el-option v-for="option in typeList" :value="option">
         {{ option }}
       </el-option>
