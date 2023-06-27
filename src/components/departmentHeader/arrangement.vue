@@ -21,7 +21,7 @@
 
                                     <div v-for="info in arrangementInfo" :key="arrangementKey">
                                         <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
-                                            <el-popconfirm confirm-button-text="查看" cancel-button-text="删除" title="请选择"
+                                            <el-popconfirm confirm-button-text="编辑" cancel-button-text="删除" title="请选择"
                                                 @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
                                                 <template #reference>
                                                     <el-tag :key="info.doctorName" type='info' size="large"
@@ -45,7 +45,7 @@
                                     <label>下午</label>
                                     <div v-for="info in arrangementInfo">
                                         <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
-                                            <el-popconfirm confirm-button-text="查看" cancel-button-text="删除" title="请选择"
+                                            <el-popconfirm confirm-button-text="编辑" cancel-button-text="删除" title="请选择"
                                                 @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
                                                 <template #reference>
                                                     <el-tag :key="info.doctorName" type='info' size="large"
@@ -665,17 +665,7 @@ export default {
                 if (data.doctorLevel == '医生') {
                     consultingRoomType = '普通门诊'
                 }
-                // this.$axios.get("/arrangement/getRemainNumber", {
-                //     params: {
-                //         doctorLevel: data.doctorLevel,
-                //         consultingRoomType: consultingRoomType,
-                //         date: this.updateDate,
-                //         amOrPm: this.updateAmOrPm,
-                //         departmentId: this.departmentId
-                //     }
-                // }).then(response => {
-                //     this.remainNumberSource = response.data.data
-                // }).catch(error => { console.log(error) })
+
                 this.$axios.get("/arrangement/getNumberSourceByDate", {   //通过日期和门诊类型得到号源id数组
                     params: {
                         date: this.updateDate,
@@ -712,14 +702,24 @@ export default {
                                 message: '调班成功',
                                 type: 'success',
                             })
-                        }else if(message ==-1){
+                        } else if (message == -1) {
                             ElMessage({
-                                message: '调班失败，目标日期号源不足',
+                                message: '调班失败，调班日期不在范围内',
                                 type: 'warning',
                             })
-                        }else{
+                        } else if (message == -2) {
                             ElMessage({
-                                message: '调班失败，调班日期不在合理范围内',
+                                message: '调班失败，该医生在调班日期已经排班',
+                                type: 'warning',
+                            })
+                        } else if (message == -3) {
+                            ElMessage({
+                                message: '调班失败，调班诊室已被占用',
+                                type: 'warning',
+                            })
+                        } else if (message == -4) {
+                            ElMessage({
+                                message: '调班失败，调班的日期的号源不足',
                                 type: 'warning',
                             })
                         }
@@ -730,6 +730,16 @@ export default {
                             this.comfirmUpdateVisible = false
                             this.detailVisible = false
                         }).catch(error => { console.log(error) })
+
+                        this.$axios.get("/numberSourceDetail/addNumberSourceDetail", {  //添加号源明细
+                            params: {
+                                doctorId: this.selectedArrangementInfo.doctorId,
+                                numberSourceDate: this.updateDate,
+                                amOrPm: this.updateAmOrPm
+                            }
+                        }).then(response => {
+
+                        }).catch(error => { })
                     }).catch(error => { });
                 }).catch(error => { })
 
