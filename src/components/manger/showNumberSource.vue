@@ -6,7 +6,7 @@
         {{ option }}
       </el-option>
     </el-select>
-    <el-select class="el-st" placeholder="选择门诊类型" @change="getNumberSource" v-model="type" filterable>
+    <el-select class="el-st" placeholder="选择门诊类型" @change="getNumberSource" v-model="type" filterable clearable>
       <el-option v-for="option in typeList" :value="option">
         {{ option }}
       </el-option>
@@ -31,7 +31,7 @@
         <el-table-column prop="numberSourceFee" label="费用" width="180" algin="center">
           <template #default="{ row }">
             <el-input :min="20" v-model="row.numberSourceFee" @focus="initInput(row)"
-              @change="updateData(row)"></el-input>
+              @change="updateData(row)" :disabled="inputDisabled(row)"></el-input>
           </template>
         </el-table-column>
         <el-table-column prop="numberSourceNumber" label="号源数量" width="180" algin="center" />
@@ -60,7 +60,7 @@
           :disabled="pickerdisabled" :disabled-date="disabledDates" />
         <br><br>
         <el-text style="margin-left: 200px;">挂号费用：</el-text>
-        <el-input-number style="width: 205px;" :min="20" v-model="numberSourceFee" />
+        <el-input-number style="width: 205px;" v-model="numberSourceFee" />
         <div style="margin-top: 10px;display: flex;justify-content: flex-end;">
           <el-button type="primary" @click="sumbit" :disabled="disabled">确认</el-button>
           <el-button @click="cancel">取消</el-button>
@@ -99,7 +99,7 @@ export default {
       deptnameList: [],
       roomtype: "",
       rooms: ['普通门诊', '专家门诊', '特需门诊'],
-      numberSourceFee: 20,
+      numberSourceFee: 0,
       selectdisabled: true,
       pickerdisabled: true,
       disabled: true,
@@ -209,6 +209,12 @@ export default {
       }
     },
 
+    inputDisabled(row){
+      const date = new Date();
+      date.setDate(date.getDate() + 6);
+      return new Date(row['numberSourceDate'])<=date
+    },
+
     forbidDate() {
       this.$axios.get('/numberSource/forbidDate', {
         params: {
@@ -217,7 +223,6 @@ export default {
         },
       }).then(res => {
         this.pickerdates = res.data.data
-        console.log(this.pickerdates)
       }).catch(error => {
         this.$message = error.message;
       })
