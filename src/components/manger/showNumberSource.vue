@@ -230,7 +230,7 @@ export default {
 
     disabledDates: function (date) {
       const today = new Date();
-      today.setDate(today.getDate() + 7);
+      today.setDate(today.getDate() + 6);
       const dateObjects = this.pickerdates.map(dateString => new Date(dateString));
       return date <= today || dateObjects.some(disabledDate => {
         return this.formatDate(disabledDate) === this.formatDate(date);
