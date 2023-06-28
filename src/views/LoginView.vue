@@ -8,13 +8,11 @@
       <form>
         <div class="form-group">
           <label for="patientPhoneNumber">账号：</label>
-          <input type="text" id="patientPhoneNumber" v-model="logigInfo.id"
-                 @keyup.enter="login" placeholder="请输入账号" />
+          <input type="text" id="patientPhoneNumber" v-model="logigInfo.id" placeholder="请输入账号" />
         </div>
         <div class="form-group">
           <label for="patientPassword">密码：</label>
-          <input type="password" id="patientPassword" v-model="logigInfo.password"
-                 @keyup.enter="login" placeholder="请输入密码" />
+          <input type="password" id="patientPassword" v-model="logigInfo.password" placeholder="请输入密码" />
         </div>
         <button type="submit" @click.prevent="login">登录</button>
         <button type="submit" @click.prevent="register">注册</button>
