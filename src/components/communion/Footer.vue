@@ -1,6 +1,6 @@
 <template>
   <footer>
-    <hr>
+    <hr style="background-color: #175850">
     <div class="footer-help">
       需要更多帮助？致电 400-820-882X。
     </div>
