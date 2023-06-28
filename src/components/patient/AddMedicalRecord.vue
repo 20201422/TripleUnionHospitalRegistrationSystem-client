@@ -116,7 +116,12 @@ export default {
         // console.log(this.medicalRecords);
 
         this.$axios.post("patientMedicalRecords/add", this.medicalRecords).then(resp => {
-          if (resp.data.data === -1) {
+          if (resp.data.data === 0) {
+            ElMessage({
+              message: '该就诊档案已存在！',
+              type: 'warning',
+            })
+          } else if (resp.data.data === -1) {
             ElMessage({
               message: '一个账号下最多三个就诊档案！',
               type: 'warning',
