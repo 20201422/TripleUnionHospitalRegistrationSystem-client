@@ -18,49 +18,52 @@
 
                                 <div id='am' class="halfday">
                                     <label>上午</label>
-
-                                    <div v-for="info in arrangementInfo" :key="arrangementKey">
-                                        <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
-                                            <el-popconfirm confirm-button-text="编辑" cancel-button-text="删除" title="请选择"
-                                                @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
-                                                <template #reference>
-                                                    <el-tag :key="info.doctorName" type='info' size="large"
-                                                        class="arrangementTag">
-                                                        <div class="tag-top">
-                                                            {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
-                                                        </div>
-                                                        <el-text class="roomName" size="small">{{
-                                                            info.consultingRoomName.slice(3) }}</el-text>
-                                                    </el-tag>
-                                                </template>
-                                            </el-popconfirm>
-                                        </div>
-                                    </div>
-
+                                    <el-scrollbar style="height: 70%;">
+                                        <div v-for="info in arrangementInfo" :key="arrangementKey">
+                                            <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
+                                                <el-popconfirm confirm-button-text="编辑" cancel-button-text="删除" title="请选择"
+                                                    @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
+                                                    <template #reference>
+                                                        <el-tag :key="info.doctorName" type='info' size="large"
+                                                            class="arrangementTag">
+                                                            <div class="tag-top">
+                                                                {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number
+                                                                }}
+                                                            </div>
+                                                            <el-text class="roomName" size="small">{{
+                                                                info.consultingRoomName.slice(3) }}</el-text>
+                                                        </el-tag>
+                                                    </template>
+                                                </el-popconfirm>
+                                            </div>
+                                        </div>      
+                                    </el-scrollbar>
                                     <el-text class="button_text" type="primary"
-                                        @click="addArrangement(dateInfo.time, '上午')">添加+</el-text>
+                                            @click="addArrangement(dateInfo.time, '上午')">添加+</el-text>
                                 </div>
 
                                 <div id='pm' class="halfday">
                                     <label>下午</label>
-                                    <div v-for="info in arrangementInfo">
-                                        <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
-                                            <el-popconfirm confirm-button-text="编辑" cancel-button-text="删除" title="请选择"
-                                                @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
-                                                <template #reference>
-                                                    <el-tag :key="info.doctorName" type='info' size="large"
-                                                        class="arrangementTag">
-                                                        <div class="tag-top">
-                                                            {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
-                                                        </div>
-                                                        <el-text class="roomName" size="small">{{
-                                                            info.consultingRoomName.slice(3) }}</el-text>
-                                                    </el-tag>
-                                                </template>
-                                            </el-popconfirm>
+                                    <el-scrollbar style="height: 70%;">
+                                        <div v-for="info in arrangementInfo">
+                                            <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
+                                                <el-popconfirm confirm-button-text="编辑" cancel-button-text="删除" title="请选择"
+                                                    @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
+                                                    <template #reference>
+                                                        <el-tag :key="info.doctorName" type='info' size="large"
+                                                            class="arrangementTag">
+                                                            <div class="tag-top">
+                                                                {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number
+                                                                }}
+                                                            </div>
+                                                            <el-text class="roomName" size="small">{{
+                                                                info.consultingRoomName.slice(3) }}</el-text>
+                                                        </el-tag>
+                                                    </template>
+                                                </el-popconfirm>
+                                            </div>
                                         </div>
-                                    </div>
-
+                                    </el-scrollbar>
                                     <el-text class="button_text" type="primary"
                                         @click="addArrangement(dateInfo.time, '下午')">添加+</el-text>
                                 </div>
@@ -117,7 +120,7 @@
             <el-option label="上午" value="上午" />
             <el-option label="下午" value="下午" />
         </el-select><br><br>
-        <el-text size="large">医生：{{ this.selectedArrangementInfo.doctorName }}</el-text>
+        <el-text size="large">医生：{{ nameFormat(this.selectedArrangementInfo.doctorName) }}</el-text>
         <!-- <el-text size="large" style="margin-left: 10%;">诊室：{{ this.selectedArrangementInfo.consultingRoomName }}</el-text><br><br> -->
         <span style="margin-left: 11%;">诊室：</span><el-select v-model="updateConsultingRoom" clearable placeholder="选择诊室">
             <el-option v-for="room in consultingRooms" :key="room.consultingRoomId" :label="room.consultingRoomName"
