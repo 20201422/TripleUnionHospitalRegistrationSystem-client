@@ -54,8 +54,12 @@ export default {
 
 .cardItem {
     margin-top: 12px;
+  border: 1px solid v-bind(green);
+  background-color: rgba(0, 128, 0, 0.03);
 
 }
 
-.content {}
+.content {
+  color: #175850;
+}
 </style>

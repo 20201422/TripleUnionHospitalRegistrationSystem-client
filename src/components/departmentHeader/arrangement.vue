@@ -1,6 +1,6 @@
 <template>
     <div class="row" style="margin-top: 30px;">
-        <div class="col-8">
+        <div class="col-9">
             <div class="frame">
                 <el-button @click="recordsVisible = true">排班记录</el-button>
                 <hr>
@@ -36,7 +36,7 @@
                                                     </template>
                                                 </el-popconfirm>
                                             </div>
-                                        </div>      
+                                        </div>
                                     </el-scrollbar>
                                     <el-text class="button_text" type="primary"
                                             @click="addArrangement(dateInfo.time, '上午')">添加+</el-text>
@@ -73,9 +73,6 @@
                 </el-scrollbar>
             </div>
             <div style="margin-bottom: 50px ;clear: both;"></div>
-        </div>
-        <div class="col-1">
-
         </div>
         <div class="col-3">
             <doctorList></doctorList>
@@ -259,7 +256,10 @@ export default {
             arrangementKey: 0,   //用于界面刷新
             comfirmUpdateVisible: false,
 
-            button_color2: Global_color.button_color,
+          button_color2: Global_color.button_color,
+          grey: Global_color.model_color,
+          green: Global_color.main_color,
+          font_grey: Global_color.font_grey,
         }
     },
     created() {
@@ -767,9 +767,15 @@ export default {
     justify-content: space-between;
 }
 
+.col-9 {
+  margin-top: 55px;
+  background-color: v-bind(grey);
+  border-radius: 12px;
+}
+
 .frame {
-    margin-left: 5%;
-    margin-top: 5%;
+    margin-left: 1%;
+    margin-top: 2%;
 }
 
 .scrollbar-flex-content {
@@ -816,11 +822,13 @@ label {
     margin-bottom: 3px;
     cursor: pointer;
     font-size: medium;
-    color: #000;
+    color: #F2F2F2;
+  background-color: v-bind(green);
 }
 
 .roomName {
     margin-top: 30px;
+  color: #F2F2F2;
 }
 
 .tag-top {
