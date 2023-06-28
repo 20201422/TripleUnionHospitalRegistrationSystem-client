@@ -1,7 +1,7 @@
 <template>
     <div class="listFrame">
         <el-text style="font-size: larger;">医生列表</el-text>
-        <el-scrollbar height="520px">
+        <el-scrollbar height="578px">
             <div v-for="doctor in doctorList">
                 <el-card shadow='always' class="cardItem">
                     <div class="content">
@@ -55,7 +55,7 @@ export default {
 .cardItem {
     margin-top: 12px;
   border: 1px solid v-bind(green);
-  background-color: rgba(0, 128, 0, 0.03);
+  background-color: rgb(248,249,250);
 
 }
 

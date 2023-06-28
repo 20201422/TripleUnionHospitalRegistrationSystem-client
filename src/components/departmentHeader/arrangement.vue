@@ -22,7 +22,7 @@
                                         <div v-for="info in arrangementInfo" :key="arrangementKey">
                                             <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
                                                 <el-popconfirm confirm-button-text="编辑" cancel-button-text="删除" title="请选择"
-                                                    @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
+                                                    @cancel="confirmDelete(info)" @confirm="openArrangmentInfo(info)">
                                                     <template #reference>
                                                         <el-tag :key="info.doctorName" type='info' size="large"
                                                             class="arrangementTag">
@@ -48,7 +48,7 @@
                                         <div v-for="info in arrangementInfo">
                                             <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
                                                 <el-popconfirm confirm-button-text="编辑" cancel-button-text="删除" title="请选择"
-                                                    @cancel="deleteArrangment(info)" @confirm="openArrangmentInfo(info)">
+                                                    @cancel="confirmDelete(info)" @confirm="openArrangmentInfo(info)">
                                                     <template #reference>
                                                         <el-tag :key="info.doctorName" type='info' size="large"
                                                             class="arrangementTag">
@@ -151,6 +151,18 @@
             <span class="dialog-footer">
                 <el-button @click="comfirmUpdateVisible = false">取消</el-button>
                 <el-button type="primary" @click="confirmUpdate">
+                    确认
+                </el-button>
+            </span>
+        </template>
+    </el-dialog>
+
+    <el-dialog v-model="comfirmDeleteVisible" title="删除排班" width="30%">
+        <span>删除数据将无法恢复，确认删除？</span>
+        <template #footer>
+            <span class="dialog-footer">
+                <el-button @click="comfirmDeleteVisible = false">取消</el-button>
+                <el-button type="primary" @click="deleteArrangment(wantDelInfo)">
                     确认
                 </el-button>
             </span>
@@ -262,6 +274,8 @@ export default {
             allNumberSource3: 0, //普通门诊号源数量
             arrangementKey: 0,   //用于界面刷新
             comfirmUpdateVisible: false,
+            comfirmDeleteVisible: false,
+            wantDelInfo:'',   //用于删除排班
 
           button_color2: Global_color.button_color,
           grey: Global_color.model_color,
@@ -481,6 +495,7 @@ export default {
                 message: '删除成功',
                 type: 'success',
             })
+            this.comfirmDeleteVisible = false
         },
         openArrangmentInfo(info) {
             this.$axios.get("/consultingRoom/rooms/" + this.departmentId).then(response => {
@@ -758,6 +773,10 @@ export default {
 
 
         },
+        confirmDelete(info){
+           this.comfirmDeleteVisible = true;
+           this.wantDelInfo = info
+        },
         cancel() {
             this.addVisible = false
         },
@@ -829,13 +848,13 @@ label {
     margin-bottom: 3px;
     cursor: pointer;
     font-size: medium;
-    color: #F2F2F2;
-  background-color: v-bind(green);
+    color: v-bind(green);
+  background-color: rgb(249,249,250);
 }
 
 .roomName {
     margin-top: 30px;
-  color: #F2F2F2;
+    color: v-bind(green);
 }
 
 .tag-top {
