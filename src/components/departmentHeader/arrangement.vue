@@ -87,7 +87,7 @@
         <el-text size="large">普通门诊：{{ this.allNumberSource3 }}</el-text>&nbsp;&nbsp;
         <br><br>
 
-        <el-select v-model="selectedDoctor" clearable placeholder="选择医生" @change="selectTrigger">
+        <el-select v-model="selectedDoctor" placeholder="选择医生" @change="selectTrigger">
             <el-option v-for="doctor in doctors" :key="doctor.doctorId" :label="doctor.doctorName"
                 :value="doctor.doctorId" />
         </el-select>
@@ -702,6 +702,15 @@ export default {
                                 message: '调班成功',
                                 type: 'success',
                             })
+                            this.$axios.get("/numberSourceDetail/addNumberSourceDetail", {  //添加号源明细
+                                params: {
+                                    doctorId: this.selectedArrangementInfo.doctorId,
+                                    numberSourceDate: this.updateDate,
+                                    amOrPm: this.updateAmOrPm
+                                }
+                            }).then(response => {
+
+                            }).catch(error => { })
                         } else if (message == -1) {
                             ElMessage({
                                 message: '调班失败，调班日期不在范围内',
@@ -731,15 +740,7 @@ export default {
                             this.detailVisible = false
                         }).catch(error => { console.log(error) })
 
-                        this.$axios.get("/numberSourceDetail/addNumberSourceDetail", {  //添加号源明细
-                            params: {
-                                doctorId: this.selectedArrangementInfo.doctorId,
-                                numberSourceDate: this.updateDate,
-                                amOrPm: this.updateAmOrPm
-                            }
-                        }).then(response => {
 
-                        }).catch(error => { })
                     }).catch(error => { });
                 }).catch(error => { })
 
