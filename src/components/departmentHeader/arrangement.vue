@@ -39,7 +39,7 @@
                                         </div>
                                     </el-scrollbar>
                                     <el-text class="button_text" type="primary"
-                                            @click="addArrangement(dateInfo.time, '上午')">添加+</el-text>
+                                        @click="addArrangement(dateInfo.time, '上午')">添加+</el-text>
                                 </div>
 
                                 <div id='pm' class="halfday">
@@ -169,43 +169,50 @@
 
                         <div id='am' class="halfday">
                             <label>上午</label>
-
-                            <div v-for="info in arrangementInfo" :key="arrangementKey">
-                                <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
-                                    <el-popconfirm confirm-button-text="查看" cancel-button-text="取消" title="请选择"
-                                        @confirm="openArrangmentInfo(info)">
-                                        <template #reference>
-                                            <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
-                                                <div class="tag-top">
-                                                    {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
-                                                </div>
-                                                <el-text class="roomName" size="small">{{ info.consultingRoomName.slice(3)
-                                                }}</el-text>
-                                            </el-tag>
-                                        </template>
-                                    </el-popconfirm>
+                            <el-scrollbar style="height: 70%;">
+                                <div v-for="info in arrangementInfo" :key="arrangementKey">
+                                    <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '上午'">
+                                        <el-popconfirm confirm-button-text="查看" cancel-button-text="取消" title="请选择"
+                                            @confirm="openArrangmentInfo(info)">
+                                            <template #reference>
+                                                <el-tag :key="info.doctorName" type='info' size="large"
+                                                    class="arrangementTag">
+                                                    <div class="tag-top">
+                                                        {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                    </div>
+                                                    <el-text class="roomName" size="small">{{
+                                                        info.consultingRoomName.slice(3)
+                                                    }}</el-text>
+                                                </el-tag>
+                                            </template>
+                                        </el-popconfirm>
+                                    </div>
                                 </div>
-                            </div>
+                            </el-scrollbar>
                         </div>
 
                         <div id='pm' class="halfday">
                             <label>下午</label>
-                            <div v-for="info in arrangementInfo">
-                                <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
-                                    <el-popconfirm confirm-button-text="查看" cancel-button-text="取消" title="请选择"
-                                        @confirm="openArrangmentInfo(info)">
-                                        <template #reference>
-                                            <el-tag :key="info.doctorName" type='info' size="large" class="arrangementTag">
-                                                <div class="tag-top">
-                                                    {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
-                                                </div>
-                                                <el-text class="roomName" size="small">{{ info.consultingRoomName.slice(3)
-                                                }}</el-text>
-                                            </el-tag>
-                                        </template>
-                                    </el-popconfirm>
+                            <el-scrollbar style="height: 70%;">
+                                <div v-for="info in arrangementInfo">
+                                    <div v-if="info.numberSourceDate == dateInfo.time && info.amOrPm == '下午'">
+                                        <el-popconfirm confirm-button-text="查看" cancel-button-text="取消" title="请选择"
+                                            @confirm="openArrangmentInfo(info)">
+                                            <template #reference>
+                                                <el-tag :key="info.doctorName" type='info' size="large"
+                                                    class="arrangementTag">
+                                                    <div class="tag-top">
+                                                        {{ nameFormat(info.doctorName) }}&nbsp;&nbsp;{{ info.number }}
+                                                    </div>
+                                                    <el-text class="roomName" size="small">{{
+                                                        info.consultingRoomName.slice(3)
+                                                    }}</el-text>
+                                                </el-tag>
+                                            </template>
+                                        </el-popconfirm>
+                                    </div>
                                 </div>
-                            </div>
+                            </el-scrollbar>
                         </div>
                     </div>
                 </div>

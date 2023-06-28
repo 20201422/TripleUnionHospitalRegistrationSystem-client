@@ -2,7 +2,7 @@
   <Header></Header>
   <div class="row">
     <div class="col-2">
-      <el-menu style="min-height: 96%; margin-top: 48px;" active-text-color="#ffd04b" background-color="#175850"
+      <el-menu style="height: 94%; min-height: 620px; margin-top: 48px;" active-text-color="#ffd04b" background-color="#175850"
         text-color="#fff">
         <label style="color: white; font-size: larger;margin: 30px 0px 30px 30px;">科室主任{{ this.$store.state.userName
         }}你好</label>

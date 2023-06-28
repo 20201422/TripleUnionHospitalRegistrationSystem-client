@@ -92,6 +92,7 @@ export default {
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   height: 94%;
+  min-height: 620px;
   margin-top: 50px;
 }
 
