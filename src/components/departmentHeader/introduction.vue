@@ -9,27 +9,27 @@
         <el-col :span="8">
             <el-statistic title="总人数" :value="doctors.length" />
             <el-table :data="doctors" border style="width: 100%">
-                <el-table-column prop="doctorId" label="ID" width="80" />
-                <el-table-column prop="doctorName" label="姓名" width="80" />
-                <el-table-column prop="doctorSex" label="性别" width="60" />
-                <el-table-column prop="doctorLevel" label="职称" width="90" />
-                <el-table-column prop="doctorType" label="级别" width="90" />
+                <el-table-column prop="doctorId" label="ID" align="center" width="80" />
+                <el-table-column prop="doctorName" label="姓名" align="center" width="80" />
+                <el-table-column prop="doctorSex" label="性别" align="center" width="60" />
+                <el-table-column prop="doctorLevel" label="职称" align="center" width="90" />
+                <el-table-column prop="doctorType" label="级别" align="center" width="90" />
                 <!-- <el-table-column prop="doctorIntroduction" label="擅长" width="180" /> -->
             </el-table>
         </el-col>
         <el-col :span="8">
             <el-statistic title="诊室数量" :value="consultingRooms.length" />
             <el-table :data="consultingRooms" border style="width: 100%">
-                <el-table-column prop="consultingRoomId" label="ID" width="100" />
-                <el-table-column prop="consultingRoomName" label="名称" width="300" />
+                <el-table-column prop="consultingRoomId" label="ID" align="center" width="100" />
+                <el-table-column prop="consultingRoomName" label="名称" align="center" width="300" />
             </el-table>
         </el-col>
         <el-col :span="8">
             <el-statistic title="总预约挂号人次" :value="registrations" />
             <div class="item3">
-                <el-text size="large">特需号：{{ registrations_special_need }}</el-text><br><br>
-                <el-text size="large">专家号：{{ registrations_expert }}</el-text><br><br>
-                <el-text size="large">普通号：{{ registrations_general }}</el-text><br><br>
+                <el-text style="font-size: 20px;">特需号：{{ registrations_special_need }}</el-text><br><br>
+                <el-text style="font-size: 20px;">专家号：{{ registrations_expert }}</el-text><br><br>
+                <el-text style="font-size: 20px;">普通号：{{ registrations_general }}</el-text><br><br>
             </div>
 
         </el-col>
