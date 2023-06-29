@@ -849,7 +849,7 @@ label {
     cursor: pointer;
     font-size: medium;
     color: v-bind(green);
-  background-color: rgb(249,249,250);
+  background-color: rgb(255,255,255);
 }
 
 .roomName {
