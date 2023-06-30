@@ -17,13 +17,14 @@
           ¥{{ row.numberSourceFee }}
         </template>
       </el-table-column>
-      <el-table-column prop="registrationState" label="挂号状态" width="110" align="center"
-                       :filters="registrationType" :filter-method="filterTagForDoctor" filter-placement="bottom-end">
+      <el-table-column prop="registrationState" label="挂号状态" width="110" align="center" fixed="right"
+                       :filters="registrationType" :filter-method="filterTagForState" filter-placement="bottom-end">
         <template #default="{ row }">
           <el-tag :type="getTagType(row.registrationState)">{{row.registrationState}}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="registrationTime" label="挂号时间" width="180" align="center" sortable />
+      <el-table-column prop="registrationTime" :data="this.registrations.sort(this.sortRegistrationTimeDesc)"
+                       label="挂号时间" fixed="right" width="180" align="center" sortable />
     </el-table>
   </div>
 
@@ -51,8 +52,8 @@ export default {
     const filterTagForPatient = (value, row) => {
       return row.recordsName === value
     }
-    const filterTagForDoctor = (value, row) => {
-      return row.doctorName === value
+    const filterTagForState = (value, row) => {
+      return row.registrationState === value
     }
 
 
@@ -60,7 +61,7 @@ export default {
       openMyRegistration,
       registrationType,
       filterTagForPatient,
-      filterTagForDoctor,
+      filterTagForState,
     }
   },
 
@@ -116,6 +117,10 @@ export default {
       }).catch(error => {
         console.log(error); // 处理错误信息
       });
+    },
+
+    sortRegistrationTimeDesc(a, b) {
+      return new Date(b.registrationTime) - new Date(a.registrationTime);
     },
 
   },
