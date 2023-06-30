@@ -3,11 +3,14 @@
         <div class="col-9">
             <div class="frame">
                 <el-button @click="recordsVisible = true">排班记录</el-button>
+                <el-button @click="comfirmQuickArrangeVisible = true">一键排班</el-button>
+                <el-button type="danger" plain style="margin-left: 70%;"
+                    @click="comfirmDeleteAllVisible = true">全部删除</el-button>
                 <hr>
                 <div style="margin-bottom: 10px ;clear: both;">
 
                 </div>
-                <el-scrollbar height="520px">
+                <el-scrollbar height="520px" v-loading="loading" element-loading-text="读取数据中...">
                     <div class="scrollbar-flex-content">
                         <div v-for="dateInfo in date" class="arrangementtable">
                             <div id="oneDay" class="oneday">
@@ -169,6 +172,30 @@
         </template>
     </el-dialog>
 
+    <el-dialog v-model="comfirmDeleteAllVisible" title="删除所有排班" width="30%">
+        <span>删除数据将无法恢复，确认删除？</span>
+        <template #footer>
+            <span class="dialog-footer">
+                <el-button @click="comfirmDeleteAllVisible = false">取消</el-button>
+                <el-button type="primary" @click="confirmDeleteAll">
+                    确认
+                </el-button>
+            </span>
+        </template>
+    </el-dialog>
+
+    <el-dialog v-model="comfirmQuickArrangeVisible" title="快速排班" width="30%">
+        <el-text size="large">一键排班不会覆盖你已有的排班，所以建议你清空当前的排班再确认</el-text>
+        <template #footer>
+            <span class="dialog-footer">
+                <el-button @click="comfirmQuickArrangeVisible = false">取消</el-button>
+                <el-button type="primary" @click="quickArrange">
+                    确认
+                </el-button>
+            </span>
+        </template>
+    </el-dialog>
+
     <el-dialog v-model="recordsVisible" style="min-height: 300px;" width="70%" title="排班记录" append-to-body :draggable=true>
         <el-scrollbar height="520px">
             <div class="scrollbar-flex-content">
@@ -275,12 +302,15 @@ export default {
             arrangementKey: 0,   //用于界面刷新
             comfirmUpdateVisible: false,
             comfirmDeleteVisible: false,
-            wantDelInfo:'',   //用于删除排班
+            comfirmQuickArrangeVisible: false,
+            comfirmDeleteAllVisible: false,
+            wantDelInfo: '',   //用于删除排班
+            loading: false,
 
-          button_color2: Global_color.button_color,
-          grey: Global_color.model_color,
-          green: Global_color.main_color,
-          font_grey: Global_color.font_grey,
+            button_color2: Global_color.button_color,
+            grey: Global_color.model_color,
+            green: Global_color.main_color,
+            font_grey: Global_color.font_grey,
         }
     },
     created() {
@@ -603,60 +633,67 @@ export default {
                                     departmentId: this.departmentId
                                 }
                             }).then(response => {
-                                this.$axios.get("/arrangement/addInfo", {    //添加排班明细
-                                    params: {
-                                        doctorId: this.selectedDoctor,
-                                        consultingRoomId: this.selectedConsultingRoom,
-                                        departmentId: this.departmentId,
-                                        numberSourceDate: this.selectedDate,
-                                        amOrPm: this.selectedAmOrPm,
-                                        number: this.numberSourceNum,
-                                        doctorLevel: this.selectedDoctorInfo.doctorLevel,
-
-                                    }
-                                }).then(response => {
-                                    //由于后面插入号源明细需要点时间，所以在这里更新界面，可以让用户察觉不到延迟
-                                    this.$axios.get("/arrangement/findByDepartmentId/" + this.departmentId).then(response => {
-                                        this.arrangementInfo = response.data.data
-                                        this.arrangementKey++;    //和v-for绑定，用于更新
-                                    }).catch(error => { console.log(error) })
-
-                                }).catch(error => console.log(error))
-
                                 var id = []
                                 id = response.data.data  //号源id数组
                                 var numberSourceId = ''
                                 for (var i = 0; i < id.length; i++) {  //号源id拼接，因为不会传数组
                                     numberSourceId += id[i] + ','
                                 }
-
-                                var count = this.numberSourceNum  //总号源数
-                                this.$axios.get("/arrangement/add", {   //添加排班
+                                this.$axios.get("/arrangement/arrange", {
                                     params: {
                                         doctorId: this.selectedDoctor,
                                         consultingRoomId: this.selectedConsultingRoom,
+                                        numberSourceDate: this.selectedDate,
                                         numberSourceId: numberSourceId,
-                                        number: count,
-                                    },
+                                        amOrPm: this.selectedAmOrPm,
+                                        number: this.numberSourceNum,
+                                        departmentId: this.departmentId,
+                                        consultingRoomType: this.selectedConsultingRoomType
+                                    }
                                 }).then(response => {
-                                    this.$axios.get("/numberSourceDetail/addNumberSourceDetail", {  //添加号源明细
-                                        params: {
-                                            doctorId: this.selectedDoctor,
-                                            numberSourceDate: this.selectedDate,
-                                            amOrPm: this.selectedAmOrPm
-                                        }
-                                    }).then(response => {
+                                    var message = response.data.data
+                                    if (message == 1) {
+                                        ElMessage({
+                                            message: '添加成功',
+                                            type: 'success',
+                                        })
+                                        this.$axios.get("/numberSourceDetail/addNumberSourceDetail", {  //添加号源明细
+                                            params: {
+                                                doctorId: this.selectedDoctor,
+                                                numberSourceDate: this.selectedDate,
+                                                amOrPm: this.selectedAmOrPm
+                                            }
+                                        }).then(response => {
 
-                                    }).catch(error => { })
+                                        }).catch(error => { })
+                                    } else if (message == -1) {
+                                        ElMessage({
+                                            message: '排班失败，调班日期不在范围内',
+                                            type: 'warning',
+                                        })
+                                    } else if (message == -2) {
+                                        ElMessage({
+                                            message: '排班失败，该医生在该日期已经排班',
+                                            type: 'warning',
+                                        })
+                                    } else if (message == -3) {
+                                        ElMessage({
+                                            message: '排班失败，该诊室已被占用',
+                                            type: 'warning',
+                                        })
+                                    } else if (message == -4) {
+                                        ElMessage({
+                                            message: '排班失败，排班日期的号源不足',
+                                            type: 'warning',
+                                        })
+                                    }
 
-                                }).catch(error => { console.log(error) })
-
-
-                                ElMessage({
-                                    message: '添加成功',
-                                    type: 'success',
-                                })
-                                this.addVisible = false
+                                    this.$axios.get("/arrangement/findByDepartmentId/" + this.departmentId).then(response => {
+                                        this.arrangementInfo = response.data.data
+                                        this.arrangementKey++;    //和v-for绑定，用于更新
+                                        this.addVisible = false
+                                    }).catch(error => { console.log(error) })
+                                }).catch(error => { console.log(error) });
 
                             }).catch(error => { console.log(error) })
                         }
@@ -666,6 +703,23 @@ export default {
             }
 
         },
+        quickArrange() {
+            this.comfirmQuickArrangeVisible = false
+            this.loading = true
+            this.$axios.get("/arrangement/quickArrange/" + this.departmentId).then(response => {
+                this.$axios.get("/arrangement/findByDepartmentId/" + this.departmentId).then(response => {
+                    this.arrangementInfo = response.data.data
+                    this.arrangementKey++;    //和v-for绑定，用于更新
+                    this.addVisible = false
+                    this.loading = false
+                }).catch(error => { console.log(error) })
+                ElMessage({
+                    message: '排班成功',
+                    type: 'success',
+                })
+            }).catch(error => { });
+        },
+
         confirmLook() {
             if (this.updateDate === this.selectedArrangementInfo.numberSourceDate
                 && this.updateAmOrPm === this.selectedArrangementInfo.amOrPm
@@ -773,9 +827,28 @@ export default {
 
 
         },
-        confirmDelete(info){
-           this.comfirmDeleteVisible = true;
-           this.wantDelInfo = info
+        confirmDelete(info) {
+            this.comfirmDeleteVisible = true;
+            this.wantDelInfo = info
+        },
+        confirmDeleteAll() {
+            this.$axios.get("/arrangement/deleteAll/" + this.departmentId).then(response => {
+
+
+                this.$axios.get("/arrangement/findByDepartmentId/" + this.departmentId).then(response => {
+                    this.arrangementInfo = response.data.data
+                    this.arrangementKey++;    //和v-for绑定，用于更新
+                    this.comfirmDeleteAllVisible = false
+                    ElMessage({
+                        message: '删除成功',
+                        type: 'success',
+                    })
+                }).catch(error => { console.log(error) })
+
+
+            }).catch(error => {
+
+            })
         },
         cancel() {
             this.addVisible = false
@@ -794,9 +867,9 @@ export default {
 }
 
 .col-9 {
-  margin-top: 55px;
-  background-color: v-bind(grey);
-  border-radius: 12px;
+    margin-top: 55px;
+    background-color: v-bind(grey);
+    border-radius: 12px;
 }
 
 .frame {
@@ -849,7 +922,7 @@ label {
     cursor: pointer;
     font-size: medium;
     color: v-bind(green);
-  background-color: rgb(255,255,255);
+    background-color: rgb(255, 255, 255);
 }
 
 .roomName {

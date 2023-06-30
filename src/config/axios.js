@@ -5,7 +5,7 @@ import router from '@/router' // 导入路由实例
 axios.defaults.baseURL = "http://localhost:9090"
 
 const request = axios.create({
-    timeout: 7242,
+    timeout: 999999,
     headers: {
 
     }
