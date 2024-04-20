@@ -73,7 +73,7 @@ export default {
     validateEmail() { // 使用正则表达式判断邮箱格式
       const emailPattern = /^[A-Za-z0-9]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
       if (!emailPattern.test(this.patient.patientEmail)) {
-        console.log('邮箱不合法');
+        // console.log('邮箱不合法');
         ElMessage.warning("邮箱不合法")
       }
     },
@@ -84,8 +84,15 @@ export default {
     },
 
     register() {
-      this.$axios.put("user/register", this.patient).then(resp => {
-        this.$router.go(-1)
+      this.$axios.post("user/register", this.patient).then(resp => {
+        let data = resp.data.data
+        console.log(data);
+        if (data === -1) {
+          ElMessage.error('该账号已注册！')
+        } else {
+          ElMessage.success('注册成功！')
+          this.$router.go(-1)
+        }
       }).catch(error => {
         console.log(error); // 处理错误信息
       });

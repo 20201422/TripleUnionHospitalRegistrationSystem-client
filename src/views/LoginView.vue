@@ -8,7 +8,7 @@
       <form>
         <div class="form-group">
           <label for="patientPhoneNumber">账号：</label>
-          <input type="text" id="patientPhoneNumber" v-model="logigInfo.id" placeholder="请输入账号" />
+          <input type="text" id="patientPhoneNumber" v-model="logigInfo.id" placeholder="请输入电话号码/账号" />
         </div>
         <div class="form-group">
           <label for="patientPassword">密码：</label>
